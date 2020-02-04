@@ -37,7 +37,8 @@ function filterByTrending(req, res) {
 
 module.exports.getAll = (req, res, next) => {
     const filter = req.query.filter;
-
+    
+    // verify if an integer is provided
     const page = Number.isNaN(parseInt(req.query.page, 10)) ? 0 : parseInt(req.query.page, 10);
     const pageLimit = Number.isNaN(parseInt(req.query.page_limit, 10)) ? 10 : parseInt(req.query.page_limit, 10);
 

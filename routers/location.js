@@ -9,9 +9,12 @@ const errorResponse = require('../helper-functions').errorResponse;
 
 router.get('/countries', (req, res, next) => {
     var countries = []
+
+    // push all countries to a single array
     for(var i = 0; i < data.length; i++){
         countries.push({id: data[i].id, country: data[i].country});
-    }
+    };
+
     res.status(200).json(countries);
 });
 
@@ -20,9 +23,12 @@ router.get('/cities', (req, res, next) => {
     
     if(!countryId) return errorResponse(res, 400, "Country ID must be provided")
 
+    // locate the provided country ID and return its cities.
     const filter = data.filter(country => country.id === countryId);
 
-    res.status(200).json(filter);
+    if(filter.length !== 1) return errorResponse(res, 404, "Provided country ID is not found")
+
+    res.status(200).json(filter[0]);
 });
 
 module.exports = router;
