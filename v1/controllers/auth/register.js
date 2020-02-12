@@ -52,9 +52,9 @@ module.exports = register = (req, res, next) => {
         // Error handling and input validation
         if (user && user.length >= 1) return errorResponse(res, 409, "An account with this email already exists");
         if (!validateEmail(email)) { error = true; errors.email_error = "Email format is invalid"; }
-        if (email.length > 200) { error = true; errors.email_error = "Email is too long"; }
+        if (!email || email.length > 200) { error = true; errors.email_error = "Email is too short or too long"; }
         if (name === undefined || name === "") { error = true; errors.name_error = "name has to be provided"; }
-        if (password.length < 8 || password.length > 50) { error = true; errors.password_error = "Password is too short or too long"; }
+        if (!password || password.length < 8 || password.length > 50) { error = true; errors.password_error = "Password is too short or too long"; }
         if (!validatePassword(password)) { error = true; errors.password_error = "Password must be a mixture of both characters and numbers" }
 
         // send back an error if any of the above conditions return one
@@ -96,5 +96,5 @@ module.exports = register = (req, res, next) => {
                 }).catch(err => errorResponse(res, 500, err.message));
 
             }).catch(err => errorResponse(res, 500, err.message));
-    }).catch(err => errorResponse(res, 500, err.message));
+    })
 };

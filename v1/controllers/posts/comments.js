@@ -4,22 +4,35 @@ const mongoose = require('mongoose');
 
 const errorResponse = require('../../helper-functions').errorResponse;
 
+// get all comments for one post
 module.exports.getComments = (req, res, next) => {
     const postId = req.params.post_id;
+
+    // verify if an integer is provided for pagination
+    const page = Number.isNaN(parseInt(req.query.page, 10)) ? 0 : parseInt(req.query.page, 10);
+    const pageLimit = Number.isNaN(parseInt(req.query.page_limit, 10)) ? 10 : parseInt(req.query.page_limit, 10);
+
+    // check if page and page limit are numbers
+    if (typeof page !== 'number' || typeof pageLimit !== 'number') return errorResponse(res, 400, "page and page_limit must be numbers");
+
 
     // validate received post ID
     if (!postId) return errorResponse(res, 400, "Post ID must be provided");
     if (!mongoose.Types.ObjectId.isValid(postId)) return errorResponse(res, 400, 'Invalid post ID')
 
     // find all comments for provided post ID
-    Comment.find({ post_id: postId }).select("-__v").lean().sort({_id: -1}).then(comments => {
-        console.log(comments)
-        if (!comments || comments.length < 1) return errorResponse(res, 400, `No comments found for ${postId}`);
+    Comment.find({ post_id: postId })
+        .skip(page && pageLimit ? (page - 1) * pageLimit : 0)
+        .limit(page !== 0 ? pageLimit : null)
+        .select("-__v").lean().sort({ _id: -1 }).then(comments => {
+            console.log(comments.length)
+            if (!comments || comments.length < 1) return errorResponse(res, 400, `No comments found for ${postId}`);
 
-        res.status(200).json(comments)
-    });
+            res.status(200).json(comments)
+        });
 };
 
+// create a new comment for one post
 module.exports.postComment = (req, res, next) => {
     const content = req.body.content;
     const postId = req.params.post_id;
