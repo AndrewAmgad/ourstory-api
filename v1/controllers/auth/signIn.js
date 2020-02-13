@@ -9,6 +9,7 @@ module.exports = signIn = (req, res, next) => {
     const email = req.body.email;
     const password = req.body.password;
 
+    if(!email || !password) return errorResponse(res, 400, "Email and password are required");
 
     User.findOne({email: email}).then(user => {
         if(!user) return errorResponse(res, 404, "Email does not exist");
