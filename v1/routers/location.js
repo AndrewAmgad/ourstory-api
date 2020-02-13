@@ -19,13 +19,14 @@ router.get('/countries', (req, res, next) => {
 });
 
 router.get('/cities', (req, res, next) => {
-    const countryId = req.query.country_id;
-    console.log(countryId)
+    const countryId = Number(req.query.country_id);
+
     
     if(!countryId) return errorResponse(res, 400, "Country ID must be provided")
 
     // locate the provided country ID and return its cities.
     const filter = data.filter(country => country.id === countryId);
+    console.log(filter)
 
     if(filter.length !== 1) return errorResponse(res, 404, "Provided country ID is not found")
 
