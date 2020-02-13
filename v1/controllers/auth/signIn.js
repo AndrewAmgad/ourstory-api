@@ -24,7 +24,7 @@ module.exports = signIn = (req, res, next) => {
                 id: user._id,
                 name: user.name,
                 email: user.email,
-                city: user.city,
+                city: {id: user.city.city_id, name: user.city.city_name},
                 token: token
             });
 

@@ -24,13 +24,13 @@ function getCity(cityId) {
     var country;
 
     for (var j = 0; j < countries.length; j++) {
-        for (var i = 0; i < countries[j].states.length; i++) {
-            if (countries[j].states[i].id === cityId) {
+        for (var i = 0; i < countries[j].cities.length; i++) {
+            if (countries[j].cities[i].id === cityId) {
                 country = {
                     country_id: countries[j].id,
-                    country_name: countries[j].country,
-                    city_id: countries[j].states[i].id,
-                    city_name: countries[j].states[i].state
+                    country_name: countries[j].name,
+                    city_id: countries[j].cities[i].id,
+                    city_name: countries[j].cities[i].name
                 };
                 return country;
             };
@@ -89,7 +89,7 @@ module.exports = register = (req, res, next) => {
                         id: result._id,
                         name: result.name,
                         email: result.email,
-                        city: result.city,
+                        city: {id: result.city.city_id, name: result.city.city_name},
                         token: token
                     });
 
