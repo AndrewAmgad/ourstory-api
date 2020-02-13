@@ -26,7 +26,7 @@ module.exports.getComments = (req, res, next) => {
         .limit(page !== 0 ? pageLimit : null)
         .select("-__v").lean().sort({ _id: -1 }).then(comments => {
             console.log(comments.length)
-            if (!comments || comments.length < 1) return errorResponse(res, 400, `No comments found for ${postId}`);
+            if (!comments || comments.length < 1) return errorResponse(res, 404, `No comments found for ${postId}`);
 
             res.status(200).json(comments)
         });

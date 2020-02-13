@@ -13,6 +13,6 @@ router.post('/signin', signIn);
 router.get('/profile', checkAuth, profile);
 router.post('/signout', checkAuth, signOut);
 router.get('/sendverification', checkAuth, email.sendVerfication);
-router.get('/verify/:verification_code', checkAuth, email.verify);
+router.get('/verify/:user_id/:verification_code', email.verify);
 
 module.exports = router;
