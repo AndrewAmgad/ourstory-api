@@ -22,7 +22,7 @@ router.get('/cities', (req, res, next) => {
     const countryId = Number(req.query.country_id);
 
     
-    if(!countryId) return errorResponse(res, 400, "Country ID must be provided")
+    if(!countryId && countryId !== 0) return errorResponse(res, 400, "Country ID must be provided")
 
     // locate the provided country ID and return its cities.
     const filter = data.filter(country => country.id === countryId);
