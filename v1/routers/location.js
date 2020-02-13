@@ -19,7 +19,7 @@ router.get('/countries', (req, res, next) => {
 });
 
 router.get('/cities', (req, res, next) => {
-    const countryId = req.body.country_id;
+    const countryId = req.query.country_id;
     console.log(countryId)
     
     if(!countryId) return errorResponse(res, 400, "Country ID must be provided")
