@@ -29,7 +29,7 @@ router.get('/cities', (req, res, next) => {
 
     if(filter.length !== 1) return errorResponse(res, 404, "Provided country ID is not found")
 
-    res.status(200).json(filter[0]);
+    res.status(200).json(filter[0].cities);
 });
 
 module.exports = router;
