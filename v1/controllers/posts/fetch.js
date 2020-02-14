@@ -23,8 +23,9 @@ function filterByLocation(req, res) {
         if (posts.length < 1) return errorResponse(res, 404, "Could not find any posts near you.");
 
         posts.map(post => {
-            ;
             post.tag = { id: 1, name: "Near you" }
+            post.id = post._id;
+            delete post._id
         });
 
         res.status(200).json(posts);
@@ -37,6 +38,8 @@ function filterByTrending(req, res) {
 
         posts.map(post => {
             post.tag = { id: 0, name: "Trending" }
+            post.id = post._id;
+            delete post._id
         });
 
         res.status(200).json(posts);
@@ -58,7 +61,11 @@ module.exports.getAll = (req, res, next) => {
 
     // get all posts
     Post.find().skip(page && pageLimit ? (page - 1) * pageLimit : 0).limit(page !== 0 ? pageLimit : null).select("-__v").lean().sort({ _id: -1 }).then(posts => {
-        res.status(200).json({ page: page, posts })
+        posts.map(post => {
+            post.id = post._id;
+            delete post._id
+        });
+        res.status(200).json(posts)
     }).catch(err => errorResponse(res, 500, err.message));
 };
 
