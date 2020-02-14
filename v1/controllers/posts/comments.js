@@ -26,9 +26,11 @@ module.exports.getComments = (req, res, next) => {
         .skip(page && pageLimit ? (page - 1) * pageLimit : 0)
         .limit(page !== 0 ? pageLimit : null)
         .select("-__v").lean().sort({ _id: -1 }).then(comments => {
-            console.log(comments.length)
-            if (!comments || comments.length < 1) return errorResponse(res, 404, `No comments found for ${postId}`);
 
+            // return an empty array if no comments are found
+            if (!comments || comments.length < 1) return res.status(200).json([]);
+
+        // replace _id with id
             comments.map((comment) => {
                 comment.id = comment._id;
                 delete comment._id
@@ -62,7 +64,7 @@ module.exports.postComment = (req, res, next) => {
     comment.save()
         .then((comment) => {
 
-            // Remove __v from response
+            // Remove __v from response and replace _id with id
             const newComment = comment.toObject();
             newComment.id = newComment._id;
             delete newComment._id;

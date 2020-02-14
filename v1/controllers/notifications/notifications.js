@@ -35,6 +35,7 @@ module.exports.getNotifications = (req, res, next) => {
     Notification.find({ user_id: userId }).select("-__v").lean().then((notifications) => {
         if(notifications.length < 1) return errorResponse(res, 404, "No notifications found");
         
+        // replace _id with id
         notifications.map((notification) => {
             notification.id = notification._id;
             delete notification._id
