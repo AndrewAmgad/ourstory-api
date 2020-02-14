@@ -1,4 +1,6 @@
 const jwt = require('jsonwebtoken');
+const Notification = require('./models/notification');
+const Post = require('./models/post');
 
 // json response when there is an error of any kind
 module.exports.errorResponse = function errorResponse(res, code, message) {
@@ -21,3 +23,5 @@ module.exports.createToken = function createToken(email, id, name, city) {
             expiresIn: "999d"
         });
 }
+
+

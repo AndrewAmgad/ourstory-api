@@ -14,6 +14,7 @@ module.exports.createPost = (req, res, next) => {
         // create new post 
         const newPost = new Post({
             author: userData.name,
+            author_id: userData.userId,
             city: {id: userData.city.city_id, name: userData.city.city_name},
             content: content,
             time: time,
@@ -24,6 +25,8 @@ module.exports.createPost = (req, res, next) => {
         newPost.save()
             .then((post) => {
                 const newPost = post.toObject();
+                newPost.id = newPost._id;
+                delete newPost._id
                 delete newPost.__v
                 res.status(200).json(newPost)
             })

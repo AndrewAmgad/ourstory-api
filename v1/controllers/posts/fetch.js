@@ -73,9 +73,11 @@ module.exports.getPost = (req, res, next) => {
     const postId = req.params.post_id;
     const userCity = req.userData.city.city_name;
 
-        Post.findByIdAndUpdate(postId, {$inc : {'views' : 1}}).select('-__v').then((post => {
+        Post.findByIdAndUpdate(postId, {$inc : {'views' : 1}}).select('-__v').lean().then((post => {
             if(!post) errorResponse(res, 404, "Post ID not found");
             if (userCity === post.city.name) post.tag = { id: 1, name: "Near you" };
+            post.id = post._id;
+            delete post._id
             res.status(200).json(post);
         })).catch(err => errorResponse(res, 500, err.message));
 

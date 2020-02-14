@@ -3,6 +3,7 @@ const Comment = require('../../models/comment');
 const mongoose = require('mongoose');
 
 const errorResponse = require('../../helper-functions').errorResponse;
+const sendNotification = require('../notifications/notifications').sendNotification;
 
 // get all comments for one post
 module.exports.getComments = (req, res, next) => {
@@ -27,6 +28,11 @@ module.exports.getComments = (req, res, next) => {
         .select("-__v").lean().sort({ _id: -1 }).then(comments => {
             console.log(comments.length)
             if (!comments || comments.length < 1) return errorResponse(res, 404, `No comments found for ${postId}`);
+
+            comments.map((comment) => {
+                comment.id = comment._id;
+                delete comment._id
+            });
 
             res.status(200).json(comments)
         });
@@ -58,7 +64,12 @@ module.exports.postComment = (req, res, next) => {
 
             // Remove __v from response
             const newComment = comment.toObject();
-            delete newComment.__v
+            newComment.id = newComment._id;
+            delete newComment._id;
+            delete newComment.__v;
+
+            // send notification
+            sendNotification(res, "Comment", `${userData.name} commented on your post`, postId);
 
             res.status(200).json(newComment)
         })

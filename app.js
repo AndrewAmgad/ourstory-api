@@ -30,9 +30,11 @@ app.use(bodyParser.json());
 const postsRouter = require('./v1/routers/posts');
 const authRouter = require('./v1/routers/auth');
 const locationRouter = require('./v1/routers/location');
+const notificationRouter = require('./v1/routers/notifications');
 
 app.use('/v1/posts', postsRouter);
 app.use('/v1/auth', authRouter);
-app.use('/v1/location', locationRouter)
+app.use('/v1/location', locationRouter);
+app.use('/v1/notifications', notificationRouter);
 
 module.exports = app;
