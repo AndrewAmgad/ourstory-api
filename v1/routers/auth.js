@@ -11,7 +11,8 @@ const email = require('../controllers/auth/email')
 router.post('/register', register);
 router.post('/signin', signIn);
 router.get('/profile', checkAuth, profile);
-router.post('/signout', checkAuth, signOut);
+router.get('/signout', checkAuth, signOut.signOut);
+router.get('/signoutall', checkAuth, signOut.signOutAll);
 router.get('/sendverification', checkAuth, email.sendVerfication);
 router.get('/verify/:user_id/:verification_code', email.verify);
 
