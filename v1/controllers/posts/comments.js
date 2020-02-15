@@ -34,11 +34,12 @@ module.exports.getComments = (req, res, next) => {
             comments.map((comment) => {
                 
                 // remove author_id from the response if the comment is marked as anonymous
-                if(comment.anonymous !== true) delete comment.author_id;
+                if(comment.anonymous === true) delete comment.author_id;
 
                  // replace _id with id
                 comment.id = comment._id;
                 delete comment._id
+                delete comment.anonymous;
             });
 
             res.status(200).json(comments)
@@ -60,6 +61,7 @@ module.exports.postComment = (req, res, next) => {
     // create the new comment object
     const comment = new Comment({
         author: anonymous === true ? "Anonymous" : userData.name,
+        anonymous: anonymous === true ? true : false,
         author_id: userData.userId,
         city: { id: userData.city.city_id, name: userData.city.city_name },
         time: new Date().getTime(),
@@ -73,11 +75,12 @@ module.exports.postComment = (req, res, next) => {
 
             // Remove __v from response and replace _id with id
             const newComment = comment.toObject();
-            if(newComment.anonymous !== true) delete newComment.author_id;
+            if(newComment.anonymous === true) delete newComment.author_id;
 
             newComment.id = newComment._id;
             delete newComment._id;
             delete newComment.__v;
+            delete newComment.anonymous;
 
             const notificationText = anonymous === true ? "Someone commented on your post" : `${userData.name} commented on your post`
 
