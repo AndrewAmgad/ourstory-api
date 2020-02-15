@@ -43,6 +43,7 @@ module.exports.getComments = (req, res, next) => {
 // create a new comment for one post
 module.exports.postComment = (req, res, next) => {
     const content = req.body.content;
+    const anonymous = req.body.anonymous;
     const postId = req.params.post_id;
     const userData = req.userData;
 
@@ -53,7 +54,7 @@ module.exports.postComment = (req, res, next) => {
 
     // create the new comment object
     const comment = new Comment({
-        author: userData.name,
+        author: anonymous === true ? "Anonymous" : userData.name,
         city: { id: userData.city.city_id, name: userData.city.city_name },
         time: new Date().getTime(),
         content: content,
@@ -70,8 +71,10 @@ module.exports.postComment = (req, res, next) => {
             delete newComment._id;
             delete newComment.__v;
 
+            const notificationText = anonymous === true ? "Someone commented on your post" : `${userData.name} commented on your post`
+
             // send notification
-            sendNotification(res, "Comment", `${userData.name} commented on your post`, postId);
+            sendNotification(res, "Comment", notificationText, postId);
 
             res.status(200).json(newComment)
         })

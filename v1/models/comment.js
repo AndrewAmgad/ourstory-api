@@ -7,6 +7,7 @@ const commentSchema = new Schema({
     city: Object,
     content: String,
     time: String,
+    anonymous: Boolean
 });
     
 const Comment = mongoose.model('Comment', commentSchema);

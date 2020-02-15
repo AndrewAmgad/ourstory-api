@@ -7,13 +7,14 @@ const errorResponse = require('../../helper-functions').errorResponse;
 module.exports.createPost = (req, res, next) => {
     const userData = req.userData;
     const content = req.body.content;
-
+    const anonymous = req.body.anonymous;
+    
     if(!content) return errorResponse(res, 400, "Post content is required")
 
         const time = new Date().getTime();
         // create new post 
         const newPost = new Post({
-            author: userData.name,
+            author: anonymous === true ? "Anonymous" : userData.name,
             author_id: userData.userId,
             city: {id: userData.city.city_id, name: userData.city.city_name},
             content: content,

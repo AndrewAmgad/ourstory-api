@@ -7,7 +7,8 @@ const postSchema = new Schema({
     city: Object,
     content: String,
     time: Number,
-    views: Number
+    views: Number,
+    anonymous: Boolean
 });
     
 const Post = mongoose.model('Post', postSchema);
