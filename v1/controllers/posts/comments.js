@@ -25,13 +25,18 @@ module.exports.getComments = (req, res, next) => {
     Comment.find({ post_id: postId })
         .skip(page && pageLimit ? (page - 1) * pageLimit : 0)
         .limit(page !== 0 ? pageLimit : null)
-        .select("-__v").lean().sort({ _id: -1 }).then(comments => {
+        .select("-__v -post_id").lean().sort({ _id: -1 }).then(comments => {
 
             // return an empty array if no comments are found
             if (!comments || comments.length < 1) return res.status(200).json([]);
 
-        // replace _id with id
+       
             comments.map((comment) => {
+                
+                // remove author_id from the response if the comment is marked as anonymous
+                if(comment.anonymous !== true) delete comment.author_id;
+
+                 // replace _id with id
                 comment.id = comment._id;
                 delete comment._id
             });
@@ -55,6 +60,7 @@ module.exports.postComment = (req, res, next) => {
     // create the new comment object
     const comment = new Comment({
         author: anonymous === true ? "Anonymous" : userData.name,
+        author_id: userData.userId,
         city: { id: userData.city.city_id, name: userData.city.city_name },
         time: new Date().getTime(),
         content: content,
@@ -67,6 +73,8 @@ module.exports.postComment = (req, res, next) => {
 
             // Remove __v from response and replace _id with id
             const newComment = comment.toObject();
+            if(newComment.anonymous !== true) delete newComment.author_id;
+
             newComment.id = newComment._id;
             delete newComment._id;
             delete newComment.__v;

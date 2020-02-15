@@ -19,6 +19,7 @@ module.exports.createPost = (req, res, next) => {
             city: {id: userData.city.city_id, name: userData.city.city_name},
             content: content,
             time: time,
+            anonymous: anonymous === true ? true : false,
             views: 0
         })
 
@@ -26,9 +27,15 @@ module.exports.createPost = (req, res, next) => {
         newPost.save()
             .then((post) => {
                 const newPost = post.toObject();
+
+                if(anonymous === true) delete newPost.author_id;
+
+                // rename _id to id
                 newPost.id = newPost._id;
                 delete newPost._id
                 delete newPost.__v
+                delete newPost.anonymous
+                
                 res.status(200).json(newPost)
             })
             .catch((error) => errorResponse(res, 500, error.message));

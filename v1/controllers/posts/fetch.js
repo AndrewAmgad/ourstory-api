@@ -24,8 +24,13 @@ function filterByLocation(req, res) {
 
         posts.map(post => {
             post.tag = { id: 1, name: "Near you" }
+
+            if(post.anonymous === true) delete post.author_id;
+
+            // rename _id to id
             post.id = post._id;
-            delete post._id
+            delete post._id;
+            delete post.anonymous;
         });
 
         res.status(200).json(posts);
@@ -38,8 +43,12 @@ function filterByTrending(req, res) {
 
         posts.map(post => {
             post.tag = { id: 0, name: "Trending" }
+            if(post.anonymous === true) delete post.author_id;
+
+            // rename _id to id
             post.id = post._id;
-            delete post._id
+            delete post._id;
+            delete post.anonymous;
         });
 
         res.status(200).json(posts);
@@ -62,8 +71,12 @@ module.exports.getAll = (req, res, next) => {
     // get all posts
     Post.find().skip(page && pageLimit ? (page - 1) * pageLimit : 0).limit(page !== 0 ? pageLimit : null).select("-__v").lean().sort({ _id: -1 }).then(posts => {
         posts.map(post => {
+
+            if(post.anonymous === true) delete post.author_id;
+
             post.id = post._id;
-            delete post._id
+            delete post._id;
+            delete post.anonymous;
         });
         res.status(200).json(posts)
     }).catch(err => errorResponse(res, 500, err.message));
