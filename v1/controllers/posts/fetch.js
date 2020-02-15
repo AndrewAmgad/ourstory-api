@@ -91,6 +91,9 @@ module.exports.getPost = (req, res, next) => {
             if (userCity === post.city.name) post.tag = { id: 1, name: "Near you" };
             post.id = post._id;
             delete post._id
+
+            if(post.anonymous) delete post.author_id;
+            delete post.anonymous
             res.status(200).json(post);
         })).catch(err => errorResponse(res, 500, err.message));
 
