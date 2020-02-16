@@ -7,7 +7,7 @@ const commentSchema = new Schema({
     author_id: String,
     city: Object,
     content: String,
-    time: String,
+    time: Number,
     anonymous: Boolean
 });
     
