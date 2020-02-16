@@ -8,6 +8,7 @@ const postSchema = new Schema({
     content: String,
     time: Number,
     views: Number,
+    last_view: Number,
     anonymous: Boolean
 });
     

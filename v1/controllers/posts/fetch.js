@@ -5,7 +5,7 @@ const errorResponse = require('../../helper-functions').errorResponse;
 
 // find posts created near the registered user only
 function filterByLocation(req, res) {
-    
+
     // verify if an integer is provided for pagination
     const page = Number.isNaN(parseInt(req.query.page, 10)) ? 0 : parseInt(req.query.page, 10);
     const pageLimit = Number.isNaN(parseInt(req.query.page_limit, 10)) ? 10 : parseInt(req.query.page_limit, 10);
@@ -23,9 +23,12 @@ function filterByLocation(req, res) {
         if (posts.length < 1) return res.status(200).json([]);
 
         posts.map(post => {
-            post.tag = { id: 1, name: "Near you" }
 
-            if(post.anonymous === true) delete post.author_id;
+            // Add post tags, allowing the "trending" tag to override the "near you" if it applies. 
+            post.tag = { id: 1, name: "Near you" }
+            if (post.views > 20 && post.last_view > new Date() - 7 * 60 * 60 * 24 * 1000) post.tag = { id: 0, name: "Trending" }
+
+            if (post.anonymous === true) delete post.author_id;
 
             // rename _id to id
             post.id = post._id;
@@ -39,12 +42,12 @@ function filterByLocation(req, res) {
 
 // get the 10 most views posts of the last 7 days.
 function filterByTrending(req, res) {
-    Post.find({ time: { $gte: new Date() - 7 * 60 * 60 * 24 * 1000 } }).select("-__v").sort({ views: -1 }).limit(10).lean().sort({ _id: -1 }).then(posts => {
-        if (posts.length < 1) return res.status(200).json([])
+    Post.find({ last_view: { $gte: new Date() - 7 * 60 * 60 * 24 * 1000 }, views: { $gte: 20 } }).select("-__v").sort({ views: -1 }).lean().sort({ _id: -1 }).then(posts => {
+        if (posts.length < 1) return res.status(200).json([]);
 
         posts.map(post => {
             post.tag = { id: 0, name: "Trending" }
-            if(post.anonymous === true) delete post.author_id;
+            if (post.anonymous === true) delete post.author_id;
 
             // rename _id to id
             post.id = post._id;
@@ -58,7 +61,8 @@ function filterByTrending(req, res) {
 
 module.exports.getAll = (req, res, next) => {
     const filter = req.query.filter;
-    
+    const userCity = req.userData.city.city_name;
+
     // verify if an integer is provided for pagination
     const page = Number.isNaN(parseInt(req.query.page, 10)) ? 0 : parseInt(req.query.page, 10);
     const pageLimit = Number.isNaN(parseInt(req.query.page_limit, 10)) ? 10 : parseInt(req.query.page_limit, 10);
@@ -74,11 +78,19 @@ module.exports.getAll = (req, res, next) => {
         if (posts.length < 1) return res.status(200).json([]);
 
         posts.map(post => {
-            if(post.anonymous === true) delete post.author_id;
+            // remove author_id if the post is anonymous
+            if (post.anonymous === true) delete post.author_id;
 
+            // Add post tags, allowing the "trending" tag to override the "near you" one if both apply. 
+            if (userCity === post.city.name) post.tag = { id: 1, name: "Near you" }
+            if (post.views > 20 && post.last_view > new Date() - 7 * 60 * 60 * 24 * 1000) post.tag = { id: 0, name: "Trending" }
+
+
+            // rename _id to id
             post.id = post._id;
             delete post._id;
             delete post.anonymous;
+
         });
         res.status(200).json(posts)
     }).catch(err => errorResponse(res, 500, err.message));
@@ -87,20 +99,24 @@ module.exports.getAll = (req, res, next) => {
 module.exports.getPost = (req, res, next) => {
     const postId = req.params.post_id;
     const userCity = req.userData.city.city_name;
+    const time = new Date().getTime();
 
-        Post.findByIdAndUpdate(postId, {$inc : {'views' : 1}}).select('-__v').lean().then((post => {
-            if(!post) errorResponse(res, 404, "Post ID not found");
-            if (userCity === post.city.name) post.tag = { id: 1, name: "Near you" };
-            
-            // replace _id with id
-            post.id = post._id;
-            delete post._id
+    Post.findByIdAndUpdate(postId, { $inc: { 'views': 1 }, last_view: time }).select('-__v').lean().then((post => {
+        if (!post) errorResponse(res, 404, "Post ID not found");
 
-            // remove author_id if post is anonymous
-            if(post.anonymous) delete post.author_id;
-            delete post.anonymous
+        // Add post tags, allowing the "trending" tag to override the "near you" one if both apply. 
+        if (userCity === post.city.name) post.tag = { id: 1, name: "Near you" };
+        if (post.views > 20 && post.last_view > new Date() - 7 * 60 * 60 * 24 * 1000) post.tag = { id: 0, name: "Trending" }
 
-            res.status(200).json(post);
-        })).catch(err => errorResponse(res, 500, err.message));
+        // replace _id with id
+        post.id = post._id;
+        delete post._id
+
+        // remove author_id if post is anonymous
+        if (post.anonymous) delete post.author_id;
+        delete post.anonymous
+
+        res.status(200).json(post);
+    })).catch(err => errorResponse(res, 500, err.message));
 
 };
