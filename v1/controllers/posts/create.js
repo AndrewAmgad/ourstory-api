@@ -20,7 +20,8 @@ module.exports.createPost = (req, res, next) => {
             content: content,
             time: time,
             anonymous: anonymous === true ? true : false,
-            views: 0
+            views: 0,
+            last_view: time
         })
 
 

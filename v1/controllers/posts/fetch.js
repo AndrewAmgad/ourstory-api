@@ -3,6 +3,9 @@ const User = require('../../models/user');
 
 const errorResponse = require('../../helper-functions').errorResponse;
 
+// minimum amount of views for a post to be on trending
+const trendingLimit = 20;
+
 // find posts created near the registered user only
 function filterByLocation(req, res) {
 
@@ -26,7 +29,7 @@ function filterByLocation(req, res) {
 
             // Add post tags, allowing the "trending" tag to override the "near you" if it applies. 
             post.tag = { id: 1, name: "Near you" }
-            if (post.views > 20 && post.last_view > new Date() - 7 * 60 * 60 * 24 * 1000) post.tag = { id: 0, name: "Trending" }
+            if (post.views > trendingLimit && post.last_view > new Date() - 7 * 60 * 60 * 24 * 1000) post.tag = { id: 0, name: "Trending" }
 
             if (post.anonymous === true) delete post.author_id;
 
@@ -42,7 +45,7 @@ function filterByLocation(req, res) {
 
 // get the 10 most views posts of the last 7 days.
 function filterByTrending(req, res) {
-    Post.find({ last_view: { $gte: new Date() - 7 * 60 * 60 * 24 * 1000 }, views: { $gte: 20 } }).select("-__v").sort({ views: -1 }).lean().sort({ _id: -1 }).then(posts => {
+    Post.find({ last_view: { $gte: new Date() - 7 * 60 * 60 * 24 * 1000 }, views: { $gte: trendingLimit } }).select("-__v").sort({ views: -1 }).lean().sort({ _id: -1 }).then(posts => {
         if (posts.length < 1) return res.status(200).json([]);
 
         posts.map(post => {
@@ -83,7 +86,7 @@ module.exports.getAll = (req, res, next) => {
 
             // Add post tags, allowing the "trending" tag to override the "near you" one if both apply. 
             if (userCity === post.city.name) post.tag = { id: 1, name: "Near you" }
-            if (post.views > 20 && post.last_view > new Date() - 7 * 60 * 60 * 24 * 1000) post.tag = { id: 0, name: "Trending" }
+            if (post.views > trendingLimit && post.last_view > new Date() - 7 * 60 * 60 * 24 * 1000) post.tag = { id: 0, name: "Trending" }
 
 
             // rename _id to id
@@ -106,7 +109,7 @@ module.exports.getPost = (req, res, next) => {
 
         // Add post tags, allowing the "trending" tag to override the "near you" one if both apply. 
         if (userCity === post.city.name) post.tag = { id: 1, name: "Near you" };
-        if (post.views > 20 && post.last_view > new Date() - 7 * 60 * 60 * 24 * 1000) post.tag = { id: 0, name: "Trending" }
+        if (post.views > trendingLimit && post.last_view > new Date() - 7 * 60 * 60 * 24 * 1000) post.tag = { id: 0, name: "Trending" }
 
         // replace _id with id
         post.id = post._id;
