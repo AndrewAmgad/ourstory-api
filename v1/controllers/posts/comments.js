@@ -27,9 +27,6 @@ module.exports.getComments = (req, res, next) => {
         .limit(page !== 0 ? pageLimit : null)
         .select("-__v -post_id").lean().sort({ _id: -1 }).then( async (comments) => {
 
-            // return an empty array if no comments are found
-            if (!comments || comments.length < 1) return res.status(200).json([]);
-
             // total amount of comments
             const total = await Comment.countDocuments({post_id: postId});
 

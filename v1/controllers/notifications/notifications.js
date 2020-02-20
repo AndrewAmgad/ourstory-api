@@ -32,7 +32,7 @@ module.exports.sendNotification = function sendNotification(res, type, content, 
 module.exports.getNotifications = (req, res, next) => {
     const userId = req.userData.userId;
 
-    Notification.find({ user_id: userId }).select("-__v").lean().then((notifications) => {
+    Notification.find({ user_id: userId }).select("-__v").lean().sort({ _id: -1 }).then((notifications) => {
         if(notifications.length < 1) return res.status(200).json([]);
         
         // replace _id with id
