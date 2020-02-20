@@ -25,10 +25,16 @@ module.exports.getComments = (req, res, next) => {
     Comment.find({ post_id: postId })
         .skip(page && pageLimit ? (page - 1) * pageLimit : 0)
         .limit(page !== 0 ? pageLimit : null)
-        .select("-__v -post_id").lean().sort({ _id: -1 }).then(comments => {
+        .select("-__v -post_id").lean().sort({ _id: -1 }).then( async (comments) => {
 
             // return an empty array if no comments are found
             if (!comments || comments.length < 1) return res.status(200).json([]);
+
+            // total amount of comments
+            const total = await Comment.countDocuments({post_id: postId});
+
+            // check if there are more comments in the next page
+            const hasMore = (pageLimit * page) < total && (page !== 0) ? true : false;
 
        
             comments.map((comment) => {
@@ -42,7 +48,13 @@ module.exports.getComments = (req, res, next) => {
                 delete comment.anonymous;
             });
 
-            res.status(200).json(comments)
+            // response
+            res.status(200).json({
+                has_more: hasMore,
+                total: total,
+                page: page,
+                comments: comments
+            })
         });
 };
 

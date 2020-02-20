@@ -7,6 +7,7 @@ module.exports = deletePost = (req, res, next) => {
     const postId = req.params.post_id;
     const userId = req.userData.userId;
 
+    // validate provided post ID
     if(!mongoose.Types.ObjectId.isValid(postId)) return errorResponse(res, 400, "Invalid post ID")
 
     Post.findById(postId).then(post => {
