@@ -33,7 +33,7 @@ module.exports.getNotifications = (req, res, next) => {
     const userId = req.userData.userId;
 
     Notification.find({ user_id: userId }).select("-__v").lean().then((notifications) => {
-        if(notifications.length < 1) return errorResponse(res, 404, "No notifications found");
+        if(notifications.length < 1) return res.status(200).json([]);
         
         // replace _id with id
         notifications.map((notification) => {
