@@ -2,7 +2,7 @@ const User = require('../../models/user');
 
 const errorResponse = require('../../helper-functions').errorResponse;
 
-var bcrypt = require('bcryptjs');
+const bcrypt = require('bcryptjs');
 const nodemailer = require("nodemailer");
 
 module.exports.sendVerfication = async (req, res, next) => {
@@ -29,9 +29,9 @@ module.exports.sendVerfication = async (req, res, next) => {
         }
     });
 
-    // email body
+    // email body, this is temporary 
     const htmlMail = `
-        <b> Our Story Email Verification </b><br />
+        <b> Email Verification </b><br />
         By clicking the link below, you verify registering to Our Story using this email address. You can ignore this email if you did not attempt this registration.
         <br />
         <a href="${process.env.baseUrl}/v1/auth/verify/${user._id}/${salt}">l${process.env.baseUrl}/v1/auth/verify/${user._id}/${salt}</a>

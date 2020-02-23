@@ -8,7 +8,8 @@ const userSchema = new Schema({
     password: {type: String},
     activeTokens: Array,
     verified: Boolean,
-    verfCode: String
+    verfCode: String,
+    passChange: Object
 });
 
 const User = mongoose.model('User', userSchema);

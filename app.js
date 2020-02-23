@@ -3,9 +3,19 @@ const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const NodeCache = require("node-cache");
+const nodemailer = require("nodemailer");
+const cors = require('cors');
 
 // initialize express app
 const app = express();
+
+// allow cors
+app.use(
+    cors({
+    origin: true,
+      credentials: true
+    })
+  ); 
 
 // mongodb connection
 mongoose.connect(
@@ -13,9 +23,20 @@ mongoose.connect(
     {useNewUrlParser: true, useFindAndModify: false, autoIndex: false, useUnifiedTopology: true}
 ).then(() => {
     console.log("MongoDB Connected")
-}).
-catch(error => console.log(error));
+}).catch(error => console.log(error));
+
 mongoose.Promise = global.Promise;
+
+// email transporter
+module.exports.transporter = nodemailer.createTransport({
+    service: 'Outlook365',
+    secure: false,
+    requireTLS: true,
+    auth: {
+        user: process.env.email,
+        pass: process.env.emailPass
+    }
+});
 
 
 // cache for active auth tokens
