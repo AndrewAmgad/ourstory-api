@@ -92,7 +92,7 @@ module.exports.changePassword = async (req, res, next) => {
 
     // password validation
     if (!newPassword || newPassword.length < 8 || newPassword.length > 50) return errorResponse(res, 400, "Password is too short or too long")
-    if (!validatePassword(password)) return errorResponse(res, 400, "Password must be a mixture of both characters and numbers");
+    if (!validatePassword(newPassword)) return errorResponse(res, 400, "Password must be a mixture of both characters and numbers");
 
     // generate password hash
     const salt = bcrypt.genSaltSync(10);
