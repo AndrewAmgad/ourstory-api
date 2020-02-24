@@ -16,7 +16,7 @@ router.get('/signout', checkAuth, signOut.signOut);
 router.get('/signoutall', checkAuth, signOut.signOutAll);
 router.get('/sendverification', checkAuth, email.sendVerfication);
 router.get('/verify/:user_id/:verification_code', email.verify);
-router.get('/sendresetmail', checkAuth, resetPass.sendMail);
+router.get('/sendresetmail', resetPass.sendResetMail);
 router.get('/verifypass/:user_id/:token', resetPass.verifyPass);
 router.post('/resetpass', resetPass.changePassword)
 
