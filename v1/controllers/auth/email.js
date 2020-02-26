@@ -1,42 +1,29 @@
 const User = require('../../models/user');
-
+const transporter = require('../../../app').transporter;
 const errorResponse = require('../../helper-functions').errorResponse;
+const cryptoRandomString = require('crypto-random-string');
 
-const bcrypt = require('bcryptjs');
-const nodemailer = require("nodemailer");
-
-module.exports.sendVerfication = async (req, res, next) => {
-    const userId = req.userData.userId;
+// Send email verification message. This function can be called from the register route by marking the 'register' boolean parameter as true.
+module.exports.sendVerfMail = sendVerfMail = async (req, res, register, user_id) => {
+    const userId = !register ? req.userData.userId : user_id;
 
     // check whether the user is verified or not before proceeding
-    const user = await User.findById(userId).catch(err => errorResponse(res, 500, err.message));
-    if(user.verified) return errorResponse(res, 400, "User is already verified");
+    const user = await User.findById(userId).catch(err => !register ? errorResponse(res, 500, err.message) : console.log(err));
+    if (user.verified) return errorResponse(res, 400, "User is already verified");
 
-    // generate verification string
-    var salt = bcrypt.genSaltSync(10);
+    /// generate verification token
+    const token = cryptoRandomString({ length: 20, type: 'url-safe' });
 
     // add the verification string to the user's object on the database
-    User.findByIdAndUpdate(userId, {verfCode: salt}).catch(err => errorResponse(res, 500, err.message));
-
-    // email transporter
-    let transporter = nodemailer.createTransport({
-        service: 'Outlook365',
-        secure: false,
-        requireTLS: true,
-        auth: {
-            user: process.env.email,
-            pass: process.env.emailPass
-        }
-    });
+    User.findByIdAndUpdate(userId, { verfCode: token }).catch(err => !register ? errorResponse(res, 500, err.message) : console.log(err));
 
     // email body, this is temporary 
     const htmlMail = `
         <b> Email Verification </b><br />
         By clicking the link below, you verify registering to Our Story using this email address. You can ignore this email if you did not attempt this registration.
         <br />
-        <a href="${process.env.baseUrl}/v1/auth/verify/${user._id}/${salt}">l${process.env.baseUrl}/v1/auth/verify/${user._id}/${salt}</a>
+        <a href="${process.env.baseUrl}/v1/auth/verify/${user._id}/${token}">${process.env.baseUrl}/v1/auth/verify/${user._id}/${token}</a>
         `
-    
 
     let mailOptions = {
         from: 'ourstory51@outlook.com',
@@ -46,15 +33,22 @@ module.exports.sendVerfication = async (req, res, next) => {
     };
 
     transporter.sendMail(mailOptions, (err, data) => {
-        if (err) {
-            console.log(err);
-        } else {
+        if (err) return !register ? errorResponse(res, 500, err.message) : console.log(err);
+
+        // return only a console log if this function is called by the register route to avoid sending multiple responses
+        if (!register) {
             res.status(200).json({
                 message: "Email verification sent"
             })
+        } else {
+            console.log("Email verifiaction sent");
         }
 
     });
+}
+
+module.exports.sendVerfication = async (req, res, next) => {
+    sendVerfMail(req, res, false, null);
 };
 
 module.exports.verify = async (req, res, next) => {
@@ -65,11 +59,11 @@ module.exports.verify = async (req, res, next) => {
     const user = await User.findById(userId);
 
     // check if the account has been verified before
-    if(user.verified) res.end("Your account is already verified.");
+    if (user.verified) res.end("Your account is already verified.");
 
     // check if the verification code matches the user's, mark the account as verified if it does
-    if(user.verfCode === verfCode) {
-        User.findByIdAndUpdate(userId, {verified: true, verifCode: ""}).then((user) => {
+    if (user.verfCode === verfCode) {
+        User.findByIdAndUpdate(userId, { verified: true, verifCode: "" }).then((user) => {
             res.end("Your account has been verified successfully")
         }).catch(err => res.end("Something went wrong, try again later."));
     } else {

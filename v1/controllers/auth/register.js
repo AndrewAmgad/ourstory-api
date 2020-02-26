@@ -3,6 +3,7 @@ var bcrypt = require('bcryptjs');
 const errorResponse = require('../../helper-functions').errorResponse;
 const createToken = require('../../helper-functions').createToken;
 const fs = require('fs');
+const sendVerification = require('./email').sendVerfMail;
 
 
 // Checks if text matches a proper email format
@@ -80,6 +81,9 @@ module.exports = register = (req, res, next) => {
             .then(result => {
                 // create jwt
                 const token = createToken(result.email, result._id, result.name, result.city);
+
+                // send verification email
+                sendVerification(req, res, true, result._id);
 
                 // add created jwt to the user's database document
                 User.findByIdAndUpdate(result._id, { $push: { activeTokens: token } }).then(() => {

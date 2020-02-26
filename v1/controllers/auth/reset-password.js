@@ -5,6 +5,7 @@ const cryptoRandomString = require('crypto-random-string');
 const transporter = require('../../../app').transporter;
 
 const bcrypt = require('bcryptjs');
+const jwtCache = require('../../../app').jwtCache;
 
 function validatePassword(password) {
     var re = /^(?=.*[a-zA-Z])(?=.*[0-9])/;
@@ -98,8 +99,12 @@ module.exports.changePassword = async (req, res, next) => {
     const salt = bcrypt.genSaltSync(10);
     const passwordHash = bcrypt.hashSync(newPassword, salt);
 
+    // remove the user's cached jwt
+    const cache = jwtCache.get(userId);
+    if(cache !== undefined) jwtCache.del(userId);
+
     // change password
-    User.findByIdAndUpdate(userId, { password: passwordHash, passChange: {} }).then((user) => {
+    User.findByIdAndUpdate(userId, { password: passwordHash, passChange: {}, activeTokens: [] }).then((user) => {
         res.status(200).json({ success: true, message: "Password changed successfully" })
     }).catch(err => errorResponse(res, 500, err.message));
 
