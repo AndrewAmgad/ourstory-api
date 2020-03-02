@@ -9,7 +9,7 @@
 REST API for the Our Story mobile application. This project is still WIP and not published yet.
 
 ## Introduction
-- Our Story is an iOS application designed & developed by Mario A. Mouris. It gives the users the chance to share their thoughts, secret and emotional troubles, allowing them to get support from the rest of the community. All of this can be achieved anonymously if the user desires.
+- Our Story is an iOS application that gives the users the chance to share their thoughts, secret and emotional troubles, allowing them to get support from the rest of the community. All of this can be achieved anonymously if the user desires.
 - This API serves as the back-end of the application which is developed in Node.js, uses the Express framework and MongoDB as its main database.
 - The key features of this applications will be highlighted below in detail.
 
