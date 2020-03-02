@@ -7,10 +7,18 @@ const trendingLimit = 20;
 module.exports = (req, res, next) => {
     const postId = req.params.post_id;
     const userCity = req.userData.city.city_name;
+    const userId = req.userData.userId;
     const time = new Date().getTime();
 
     Post.findByIdAndUpdate(postId, { $inc: { 'views': 1 }, last_view: time }).select('-__v').lean().then((post => {
         if (!post) errorResponse(res, 404, "Post ID not found");
+
+        // add a boolean property to the response if the user's ID matches the author's.
+        if(userId === post.author_id) {
+            post.can_edit = true;
+        } else {
+            post.can_edit = false;
+        };
 
         // Add post tags, allowing the "trending" tag to override the "near you" one if both apply. 
         if (userCity === post.city.name) post.tag = { id: 1, name: "Near you" };
