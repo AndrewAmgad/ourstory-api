@@ -1,3 +1,10 @@
+<p align="center">
+<img  src="logo.png" width="250" height="250">
+  </p>
+  
+  <br/>
+  
+
 # Our Story API (UNDER DEVELOPMENT)
 REST API for the Our Story mobile application. This project is still WIP and not published yet.
 
