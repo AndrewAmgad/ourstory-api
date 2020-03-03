@@ -15,7 +15,7 @@ function validatePassword(password) {
 
 // send change password email
 module.exports.sendResetMail = async (req, res, next) => {
-     const email = req.body.email;
+     const email = req.query.email;
      if(!email) return errorResponse(res, 400, "Email is required");
 
     // generate verification token
