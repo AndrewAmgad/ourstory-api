@@ -22,7 +22,7 @@ module.exports = (req, res, next) => {
 
         // Add post tags, allowing the "trending" tag to override the "near you" one if both apply. 
         if (userCity === post.city.name) post.tag = { id: 1, name: "Near you" };
-        if (post.views > trendingLimit && post.last_view > new Date() - 7 * 60 * 60 * 24 * 1000) post.tag = { id: 0, name: "Trending" }
+        if (post.views > trendingLimit && post.last_view > new Date() - 7 * 60 * 60 * 24 * 1000) post.tag = { id: 0, name: "Trending" };
 
         // replace _id with id
         post.id = post._id;
