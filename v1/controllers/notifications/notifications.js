@@ -16,7 +16,8 @@ module.exports.sendNotification = function sendNotification(res, type, content, 
             notification_type: type,
             content: content,
             time: new Date().getTime(),
-            post_id: post_id
+            post_id: post_id,
+            is_read: false
         })
 
         notification.save()
@@ -35,15 +36,18 @@ module.exports.sendNotification = function sendNotification(res, type, content, 
 module.exports.getNotifications = (req, res, next) => {
     const userId = req.userData.userId;
 
-    Notification.find({ user_id: userId }).select("-__v").lean().sort({ _id: -1 }).then((notifications) => {
+    Notification.find({ user_id: userId }).select("-__v").lean().sort({ _id: -1 }).then(async (notifications) => {
         if (notifications.length < 1) return res.status(200).json([]);
-
-        // replace _id with id
+        
         notifications.map((notification) => {
+            // replace _id with id
             notification.id = notification._id;
             delete notification._id
             delete notification.user_id
         });
+
+        // modifiy unread notifications and mark them as read
+        await Notification.updateMany({user_id: userId, is_read: false}, {is_read: true});
 
         res.status(200).json(notifications)
     }).catch(err => errorResponse(res, 500, err.message));
