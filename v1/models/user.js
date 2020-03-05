@@ -9,7 +9,9 @@ const userSchema = new Schema({
     activeTokens: Array,
     verified: Boolean,
     verfCode: String,
-    passChange: Object
+    passChange: Object,
+    deviceTokens: []
+
 });
 
 const User = mongoose.model('User', userSchema);
