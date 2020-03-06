@@ -10,10 +10,44 @@ const errorResponse = require('../../helper-functions').errorResponse;
 
 // creates a new notification and saves it to the database.
 // this function is called from inside other routes
-module.exports =  function sendNotification(res, type, content, post_id) {
+module.exports = function sendNotification(res, type, content, post_id) {
     console.log("post id: " + post_id);
 
     Post.findById(post_id).then(async (post) => {
+
+
+        // get the amount of unread notifications
+        const notificationsCount = await Notification.countDocuments({ user_id: post.author_id, is_read: false});
+        console.log(notificationsCount)
+
+        // get device token to send notification
+        const user = await User.findById(post.author_id);
+
+        for (var i = 0; i < user.deviceTokens.length; i++) {
+
+            const deviceToken = user.deviceTokens[i].deviceToken;
+            const apnNotification = new apn.Notification({
+                aps: {
+                    "content-available": true
+                }
+            });
+
+            // notification settings
+            apnNotification.payload = { 'post_id': post_id };
+            apnNotification.alert = content;
+            apnNotification.topic = process.env.bundleId;
+            apnNotification.sound = "ping.aiff";
+            apnNotification.pushType = "alert";
+            apnNotification.badge = notificationsCount + 1;
+
+            // send the notification
+            apnProvider.send(apnNotification, deviceToken).then((result) => {
+                console.log(result);
+            });
+
+        };
+
+        // save notification to the database
         const notification = new Notification({
             user_id: post.author_id,
             notification_type: type,
@@ -22,32 +56,6 @@ module.exports =  function sendNotification(res, type, content, post_id) {
             post_id: post_id,
             is_read: false
         });
-
-        // get device token to send notification
-        const user = await User.findById(post.author_id);
-
-        for(var i = 0; i < user.deviceTokens.length; i++){
-            const deviceToken = user.deviceTokens[i].deviceToken;
-            const apnNotification = new apn.Notification({
-                aps: {
-                    "content-available" : true
-                }
-            }) ;
-
-            // notification settings
-            apnNotification.payload = {'post_id': post_id};
-            apnNotification.alert = content;
-            apnNotification.topic = process.env.bundleId;
-            apnNotification.sound = "ping.aiff";
-            apnNotification.pushType = "alert";
-            apnNotification.badge = 1
-
-            // send the notification
-            apnProvider.send(apnNotification, deviceToken).then((result) => {
-                console.log(result);
-            });
-            
-        };
 
         notification.save()
             .then((result) => {
