@@ -5,6 +5,8 @@ const bodyParser = require('body-parser');
 const NodeCache = require("node-cache");
 const nodemailer = require("nodemailer");
 const cors = require('cors');
+var apn = require('apn');
+const fs = require('fs');
 
 // initialize express app
 const app = express();
@@ -37,6 +39,18 @@ module.exports.transporter = nodemailer.createTransport({
         pass: process.env.emailPass
     }
 });
+
+// connect to Apple Push Notification service
+var apnOptions = {
+    token: {
+      key: process.env.ApnAuthKey,
+      keyId: process.env.keyId,
+      teamId: process.env.teamId
+    },
+    production: false
+  };
+  
+  module.exports.apnProvider = new apn.Provider(apnOptions);
 
 
 // cache for active auth tokens

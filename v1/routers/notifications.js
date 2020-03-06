@@ -3,10 +3,11 @@ const router = express.Router();
 
 const checkAuth = require('../middleware/check-auth');
 
-const notifications = require('../controllers/notifications/notifications');
+const getNotifications = require('../controllers/notifications/get-notifications');
+const sendDeviceToken = require('../controllers/notifications/device-token');
 
 
-router.get('/', checkAuth, notifications.getNotifications);
-router.post('/sendtoken', checkAuth, notifications.sendDeviceToken);
+router.get('/', checkAuth, getNotifications);
+router.post('/sendtoken', checkAuth, sendDeviceToken);
 
 module.exports = router;

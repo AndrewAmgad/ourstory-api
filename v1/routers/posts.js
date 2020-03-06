@@ -5,8 +5,8 @@ const router = express.Router();
 const checkAuth = require('../middleware/check-auth');
 
 // posts
-const fetchAll = require('../controllers/posts/get/get_all');
-const fetchOne = require('../controllers/posts/get/get_one');
+const fetchAll = require('../controllers/posts/get/get-all');
+const fetchOne = require('../controllers/posts/get/get-one');
 const createPosts = require('../controllers/posts/create');
 const deletePost = require('../controllers/posts/delete');
 

@@ -3,7 +3,7 @@ const Comment = require('../../models/comment');
 const mongoose = require('mongoose');
 
 const errorResponse = require('../../helper-functions').errorResponse;
-const sendNotification = require('../notifications/notifications').sendNotification;
+const sendNotification = require('../notifications/send-notification');
 
 
 // create a new comment for one post
@@ -47,10 +47,10 @@ module.exports = (req, res, next) => {
             // make sure a notification is not sent if the author of the post is the one posting the comment
             const post = await Post.findById(postId);
             if (post.author_id !== userData.userId) {
-                sendNotification(res, "Comment", notificationText, postId);
+             sendNotification(res, "Comment", notificationText, postId);
             };
 
-            res.status(200).json(newComment)
+            return res.status(200).json(newComment)
         })
         .catch((error) => errorResponse(res, 500, error.message));
 
