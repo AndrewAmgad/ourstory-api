@@ -63,9 +63,11 @@ module.exports.verify = async (req, res, next) => {
 
     // check if the verification code matches the user's, mark the account as verified if it does
     if (user.verfCode === verfCode) {
+
         User.findByIdAndUpdate(userId, { verified: true, verifCode: "" }).then((user) => {
             res.end("Your account has been verified successfully")
         }).catch(err => res.end("Something went wrong, try again later."));
+        
     } else {
         res.end("Something went wrong, try again later.")
     };

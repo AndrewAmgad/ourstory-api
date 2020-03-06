@@ -45,7 +45,7 @@ module.exports.filterByLocation = (req, res, page, pageLimit) => {
                 page: page,
                 posts: posts
             });
-        });
+        }).catch(err => errorResponse(res, 500, err.message));
 };
 
 // get the 10 most views posts of the last 7 days.

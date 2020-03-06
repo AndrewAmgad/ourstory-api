@@ -19,7 +19,7 @@ module.exports = (req, res, next) => {
 
         Comment.findByIdAndRemove(commentId).then((comment) => {
             res.status(200).json({ message: "Comment deleted successfully" });
-        }).catch(err => errorResponse(res, 500, err.message));
+        });
 
     }).catch(err => errorResponse(res, 500, err.message));
 };

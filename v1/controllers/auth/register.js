@@ -96,7 +96,7 @@ module.exports = register = (req, res, next) => {
                         token: token
                     });
 
-                }).catch(err => errorResponse(res, 500, err.message));
+                });
 
             }).catch(err => errorResponse(res, 500, err.message));
     })

@@ -31,21 +31,24 @@ module.exports = (req, res, next) => {
 
     // save new comment
     comment.save()
-        .then((comment) => {
+        .then(async (comment) => {
 
             // Remove __v from response and replace _id with id
             const newComment = comment.toObject();
-            if(newComment.anonymous === true) delete newComment.author_id;
+            if (newComment.anonymous === true) delete newComment.author_id;
 
             newComment.id = newComment._id;
             delete newComment._id;
             delete newComment.__v;
             delete newComment.anonymous;
 
-            const notificationText = anonymous === true ? "Someone commented on your post" : `${userData.name} commented on your post`
+            const notificationText = anonymous === true ? "Someone commented on your post" : `${userData.name} commented on your post`;
 
-            // send notification
-            sendNotification(res, "Comment", notificationText, postId);
+            // make sure a notification is not sent if the author of the post is the one posting the comment
+            const post = await Post.findById(postId);
+            if (post.author_id !== userData.userId) {
+                sendNotification(res, "Comment", notificationText, postId);
+            };
 
             res.status(200).json(newComment)
         })
