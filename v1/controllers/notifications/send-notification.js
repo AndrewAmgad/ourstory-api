@@ -25,6 +25,7 @@ module.exports =  function sendNotification(res, type, content, post_id) {
 
         // get device token to send notification
         const user = await User.findById(post.author_id);
+
         for(var i = 0; i < user.deviceTokens.length; i++){
             const deviceToken = user.deviceTokens[i].deviceToken;
             const apnNotification = new apn.Notification({
@@ -33,6 +34,7 @@ module.exports =  function sendNotification(res, type, content, post_id) {
                 }
             }) ;
 
+            // notification settings
             apnNotification.payload = {'post_id': post_id};
             apnNotification.alert = content;
             apnNotification.topic = process.env.bundleId;
@@ -40,6 +42,7 @@ module.exports =  function sendNotification(res, type, content, post_id) {
             apnNotification.pushType = "alert";
             apnNotification.badge = 1
 
+            // send the notification
             apnProvider.send(apnNotification, deviceToken).then((result) => {
                 console.log(result);
             });
