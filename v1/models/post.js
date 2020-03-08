@@ -9,7 +9,8 @@ const postSchema = new Schema({
     time: Number,
     views: Number,
     last_view: Number,
-    anonymous: Boolean
+    anonymous: Boolean,
+    users_activity: []
 });
     
 const Post = mongoose.model('Post', postSchema);

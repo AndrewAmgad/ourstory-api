@@ -10,8 +10,8 @@ const userSchema = new Schema({
     verified: Boolean,
     verfCode: String,
     passChange: Object,
-    deviceTokens: []
-
+    deviceTokens: [],
+    notificationSettings: Object
 });
 
 const User = mongoose.model('User', userSchema);
