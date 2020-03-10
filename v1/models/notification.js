@@ -5,6 +5,7 @@ const notificationSchema = new Schema({
     user_id: String,
     notification_type: String,
     content: String,
+    sender: Object,
     time: Number,
     post_id: String,
     is_read: Boolean,

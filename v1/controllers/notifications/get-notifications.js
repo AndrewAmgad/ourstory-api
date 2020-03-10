@@ -2,7 +2,6 @@ const Notification = require('../../models/notification');
 const apnProvider = require('../../../app').apnProvider;
 const User = require('../../models/user');
 const errorResponse = require('../../helper-functions').errorResponse;
-
 const apn = require('apn');
 
 // get all notifications for one user
@@ -15,7 +14,7 @@ module.exports = (req, res, next) => {
         // get device token to send notification
         const user = await User.findById(userId);
 
-        // send an empty notification to clear the notification badges
+        // send an empty notification to reset the notification badges
         for (var i = 0; i < user.deviceTokens.length; i++) {
             const deviceToken = user.deviceTokens[i].deviceToken;
             const apnNotification = new apn.Notification({

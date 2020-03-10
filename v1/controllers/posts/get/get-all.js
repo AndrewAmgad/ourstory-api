@@ -26,7 +26,7 @@ module.exports = (req, res, next) => {
     const query = userId ? {author_id: userId} : {};
 
     // get all posts
-    Post.find(query).skip(page && pageLimit ? (page - 1) * pageLimit : 0).limit(page !== 0 ? pageLimit : null).select("-__v").lean().sort({ _id: -1 }).then(async (posts) => {
+    Post.find(query).skip(page && pageLimit ? (page - 1) * pageLimit : 0).limit(page !== 0 ? pageLimit : null).select("-__v -users_activity").lean().sort({ _id: -1 }).then(async (posts) => {
         // return total amount of posts in the collection
         const total = await Post.countDocuments(query);
 

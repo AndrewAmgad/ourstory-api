@@ -13,7 +13,7 @@ module.exports.filterByLocation = (req, res, page, pageLimit) => {
     // find posts created in the same city as the user's.
     Post.find({ city: userCity })
         .skip(page && pageLimit ? (page - 1) * pageLimit : 0).limit(page !== 0 ? pageLimit : null)
-        .select("-__v").lean().sort({ _id: -1 })
+        .select("-__v -users_activity").lean().sort({ _id: -1 })
         .then(async (posts) => {
             // total amount of trending posts
             const total = await Post.countDocuments({ city: userCity });
@@ -31,10 +31,9 @@ module.exports.filterByLocation = (req, res, page, pageLimit) => {
                     // remove author ID from the response if it is classified as anonymous
                     if (post.anonymous === true) delete post.author_id;
 
-                    // rename _id to id
+                    // rename _id to id and remove the anonymous property
                     post.id = post._id;
-                    delete post._id;
-                    delete post.anonymous;
+                    ['_id', 'anonymous'].forEach(e => delete post[e]);
                 });
             };
 
@@ -52,7 +51,7 @@ module.exports.filterByLocation = (req, res, page, pageLimit) => {
 module.exports.filterByTrending = (req, res, page, pageLimit) => {
     Post.find({ last_view: { $gte: new Date() - 7 * 60 * 60 * 24 * 1000 }, views: { $gte: trendingLimit } })
         .skip(page && pageLimit ? (page - 1) * pageLimit : 0).limit(page !== 0 ? pageLimit : null)
-        .select("-__v").sort({ views: -1 }).lean().sort({ _id: -1 })
+        .select("-__v -users_activity").sort({ views: -1 }).lean().sort({ _id: -1 })
 
         .then(async (posts) => {
             // total amount of trending posts
@@ -66,10 +65,9 @@ module.exports.filterByTrending = (req, res, page, pageLimit) => {
                     post.tag = { id: 0, name: "Trending" }
                     if (post.anonymous === true) delete post.author_id;
 
-                    // rename _id to id
+                    // rename _id to id and remove the anonymous property
                     post.id = post._id;
-                    delete post._id;
-                    delete post.anonymous;
+                    ['_id', 'anonymous'].forEach(e => delete post[e]);
                 });
             }
 

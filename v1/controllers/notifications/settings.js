@@ -10,7 +10,7 @@ module.exports.updateSettings = async (req, res, next) => {
     const userActivity = req.body.user_activity;
     const userPosts = req.body.user_posts
 
-    if (!userActivity && !userPosts) return errorResponse(res, 400, "One of the following fields are required 'user_activity', 'user_posts'");
+    if (userActivity === undefined && userPosts === undefined) return errorResponse(res, 400, "One of the following fields are required 'user_activity', 'user_posts'");
 
     const user = await User.findById(userId).catch(err => (errorResponse(res, 500, err.message)));
 
