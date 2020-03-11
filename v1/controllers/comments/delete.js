@@ -17,7 +17,18 @@ module.exports = (req, res, next) => {
         // return an error if the user's ID does not match the comment's author
         if (comment.author_id !== userId) return errorResponse(res, 401, "Unauthorized");
 
-        Comment.findByIdAndRemove(commentId).then((comment) => {
+        Comment.findByIdAndRemove(commentId).then(async () => {
+
+            // get the remaining amount of comments that the user has on this post
+            const remainingComments = await Comment.countDocuments({ post_id: comment.post_id, author_id: userId });
+
+            // delete the user ID from the post's users_activty object so that they would no longer receive notifications if remainingComments is equal to 0
+            if (remainingComments === 0) {
+                Post.findByIdAndUpdate(comment.post_id, { $pull: { users_activity: userId } })
+                    .then(() => console.log("Deleted from users activity"));
+            };
+
+
             res.status(200).json({ message: "Comment deleted successfully" });
         });
 
