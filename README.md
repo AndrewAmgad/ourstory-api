@@ -32,3 +32,4 @@ REST API for the Our Story mobile application. This project is still WIP and not
 ## Author
 Andrew Amgad Mouris,
 andrewamgad30@gmail.com
+LinkedIn: https://www.linkedin.com/in/andrew-amgad-87068616a/
