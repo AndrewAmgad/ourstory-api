@@ -21,13 +21,16 @@ module.exports.signOut = signOut = async (req, res, next) => {
     // get the device token that's corresponding to the provided auth token
     const user = await User.findById(userId);
     var deviceToken = {};
-    for(var i = 0; i < user.deviceTokens.length; i++){
-        if(user.deviceTokens[i].authToken === token) deviceToken = user.deviceTokens[i]; 
-    };
-    
+
+    if (user.deviceTokens) {
+        for (var i = 0; i < user.deviceTokens.length; i++) {
+            if (user.deviceTokens[i].authToken === token) deviceToken = user.deviceTokens[i];
+        };
+    }
+
 
     // find the user object, delete the logged out token
-    User.findByIdAndUpdate(userId, { $pull: { activeTokens: token, deviceTokens: deviceToken }})
+    User.findByIdAndUpdate(userId, { $pull: { activeTokens: token, deviceTokens: deviceToken } })
         .then(result => {
             console.log("Token removed from database");
             res.status(200).json({ message: "User logged out successfully" });
@@ -51,5 +54,5 @@ module.exports.signOutAll = signOutAll = (req, res, next) => {
         };
     };
 
-    res.status(200).json({message: "Logged out all sessions"})
+    res.status(200).json({ message: "Logged out all sessions" })
 };

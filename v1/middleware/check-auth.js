@@ -6,25 +6,25 @@ const jwtCache = require('../../app').jwtCache;
 
 
 // check if the provided token exists in the database, cache it for one day if it does.
-function getTokenFromDB(userId, token, res, next){
+function getTokenFromDB(userId, token, res, next) {
     var activeToken = false;
-                User.findById(userId).then((user) => {
-                    for (var i = 0; i < user.activeTokens.length; i++) {
-    
-                        if (user.activeTokens[i] === token) {
-                            activeToken = true;
+    User.findById(userId).then((user) => {
+        for (var i = 0; i < user.activeTokens.length; i++) {
 
-                            const cache = jwtCache.set(userId, token, 10000);
-                            
-                            if(!cache) errorResponse(res, 500, "Server auth error");
-                            console.log("Token saved to cache")
-                        };
-                    };
-    
-                    if (!activeToken) return errorResponse(res, 401, "Unauthorized, inactive token");
-                    
-                    next();
-                }).catch(error => console.log(error))
+            if (user.activeTokens[i] === token) {
+                activeToken = true;
+
+                const cache = jwtCache.set(userId, token, 10000);
+
+                if (!cache) errorResponse(res, 500, "Server auth error");
+                console.log("Token saved to cache")
+            };
+        };
+
+        if (!activeToken) return errorResponse(res, 401, "Unauthorized, inactive token");
+
+        next();
+    }).catch(error => console.log(error))
 };
 
 module.exports = (req, res, next) => {
@@ -47,7 +47,7 @@ module.exports = (req, res, next) => {
         const key = jwtCache.get(userId);
 
         if (key !== undefined) {
-            if(key === token) {
+            if (key === token) {
                 console.log("token found in cache");
                 tokenInCache = true;
                 next();
@@ -55,7 +55,7 @@ module.exports = (req, res, next) => {
                 getTokenFromDB(userId, token, res, next);
             };
 
-        } else{
+        } else {
             getTokenFromDB(userId, token, res, next);
         };
 
