@@ -10,6 +10,7 @@ const trendingLimit = 20;
 module.exports = (req, res, next) => {
     const filter = req.query.filter;
     const userCity = req.userData.city.city_name;
+    const userData = req.userData;
     const userId = req.query.user_id;
 
     // verify if an integer is provided for pagination
@@ -35,12 +36,17 @@ module.exports = (req, res, next) => {
 
         if (posts.length > 0) {
             posts.map(post => {
+                // add can_edit property to the response if the requesting user is the author
+                if(post.author_id.toString() === userData.userId.toString()) post.can_edit = true;
+
                 // remove author_id if the post is anonymous
                 if (post.anonymous === true) delete post.author_id;
 
                 // Add post tags, allowing the "trending" tag to override the "near you" one if both apply. 
                 if (userCity === post.city.name) post.tag = { id: 1, name: "Near you" }
                 if (post.views > trendingLimit && post.last_view > new Date() - 7 * 60 * 60 * 24 * 1000) post.tag = { id: 0, name: "Trending" }
+
+                
 
                 // rename _id to id
                 post.id = post._id;

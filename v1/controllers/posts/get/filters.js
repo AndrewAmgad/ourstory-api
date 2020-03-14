@@ -6,9 +6,11 @@ const trendingLimit = 20;
 
 // find posts created near the registered user only
 module.exports.filterByLocation = (req, res, page, pageLimit) => {
+    const userData = req.userData;
 
     // retrieve user's city from jwt
     const userCity = { id: req.userData.city.city_id, name: req.userData.city.city_name };
+
 
     // find posts created in the same city as the user's.
     Post.find({ city: userCity })
@@ -24,6 +26,9 @@ module.exports.filterByLocation = (req, res, page, pageLimit) => {
 
             if (posts.length > 0) {
                 posts.map(post => {
+                    // add can_edit property to the response if the requesting user is the author
+                    if (post.author_id.toString() === userData.userId.toString()) post.can_edit = true;
+
                     // Add post tags, allowing the "trending" tag to override the "near you" if it applies. 
                     post.tag = { id: 1, name: "Near you" }
                     if (post.views > trendingLimit && post.last_view > new Date() - 7 * 60 * 60 * 24 * 1000) post.tag = { id: 0, name: "Trending" }
@@ -49,6 +54,8 @@ module.exports.filterByLocation = (req, res, page, pageLimit) => {
 
 // get the 10 most views posts of the last 7 days.
 module.exports.filterByTrending = (req, res, page, pageLimit) => {
+    const userData = req.userData;
+    
     Post.find({ last_view: { $gte: new Date() - 7 * 60 * 60 * 24 * 1000 }, views: { $gte: trendingLimit } })
         .skip(page && pageLimit ? (page - 1) * pageLimit : 0).limit(page !== 0 ? pageLimit : null)
         .select("-__v -users_activity").sort({ views: -1 }).lean().sort({ _id: -1 })
@@ -62,6 +69,10 @@ module.exports.filterByTrending = (req, res, page, pageLimit) => {
 
             if (posts.length > 0) {
                 posts.map(post => {
+                    // add can_edit property to the response if the requesting user is the author
+                    if (post.author_id.toString() === userData.userId.toString()) post.can_edit = true;
+
+
                     post.tag = { id: 0, name: "Trending" }
                     if (post.anonymous === true) delete post.author_id;
 
