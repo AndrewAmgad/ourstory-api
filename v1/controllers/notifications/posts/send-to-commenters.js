@@ -7,7 +7,7 @@ const createPushNotification = require('../notification').createPushNotification
 module.exports = async function sendToCommenters(type, postId, authorId, sender, usersActivity) {
     User.find({ '_id': { $in: usersActivity } }).then(users => {
         users.map(async (user) => {
-            if (user.deviceTokens.length !== 0 && sender.id !== user.id && user.id !== authorId) {
+            if (user.deviceTokens.length !== 0 && sender.id.toString() !== user.id.toString() && user.id.toString() !== authorId.toString()) {
 
                 // get the user's device tokens
                 var deviceTokens = [];

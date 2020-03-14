@@ -59,7 +59,7 @@ module.exports = async (req, res, next) => {
             };
 
             // make sure a notification is not sent if the author of the post is the one posting the comment
-                sendNotification("comment", postId, sender);
+            sendNotification("comment", postId, sender);
 
             return res.status(200).json(newComment)
         })
