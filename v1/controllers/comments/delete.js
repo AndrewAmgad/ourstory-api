@@ -15,7 +15,7 @@ module.exports = (req, res, next) => {
         if (!comment) return errorResponse(res, 404, "Comment not found");
 
         // return an error if the user's ID does not match the comment's author
-        if (comment.author_id !== userId) return errorResponse(res, 401, "Unauthorized");
+        if (comment.author_id.toString() !== userId.toString()) return errorResponse(res, 401, "Unauthorized");
 
         Comment.findByIdAndRemove(commentId).then(async () => {
 

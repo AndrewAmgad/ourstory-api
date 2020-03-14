@@ -14,7 +14,7 @@ module.exports = (req, res, next) => {
         if (!post) errorResponse(res, 404, "Post ID not found");
 
         // add a boolean property to the response if the user's ID matches the author's.
-        if(userId === post.author_id) {
+        if(userId.toString() === post.author_id.toString()) {
             post.can_edit = true;
         } else {
             post.can_edit = false;
