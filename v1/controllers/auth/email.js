@@ -2,6 +2,21 @@ const User = require('../../models/user');
 const transporter = require('../../../app').transporter;
 const errorResponse = require('../../helper-functions').errorResponse;
 const cryptoRandomString = require('crypto-random-string');
+var handlebars = require('handlebars');
+
+var fs = require('fs');
+
+var readHTMLFile = function (path, callback) {
+    fs.readFile(path, { encoding: 'utf-8' }, function (err, html) {
+        if (err) {
+            throw err;
+            callback(err);
+        }
+        else {
+            callback(null, html);
+        }
+    });
+};
 
 // Send email verification message. This function can be called from the register route by marking the 'register' boolean parameter as true.
 module.exports.sendVerfMail = sendVerfMail = async (req, res, register, user_id) => {
@@ -25,26 +40,34 @@ module.exports.sendVerfMail = sendVerfMail = async (req, res, register, user_id)
         <a href="${process.env.baseUrl}/api/v1/auth/verify/${user._id}/${token}">${process.env.baseUrl}/api/v1/auth/verify/${user._id}/${token}</a>
         `
 
-    let mailOptions = {
-        from: 'ourstory51@outlook.com',
-        to: user.email,
-        subject: 'Email Verification',
-        html: htmlMail
-    };
-
-    transporter.sendMail(mailOptions, (err, data) => {
-        if (err) return !register ? errorResponse(res, 500, err.message) : console.log(err);
-
-        // return only a console log if this function is called by the register route to avoid sending multiple responses
-        if (!register) {
-            res.status(200).json({
-                message: "Email verification sent"
-            })
-        } else {
-            console.log("Email verifiaction sent");
+    readHTMLFile(__dirname + '../../../views/index.html', function (err, html) {
+        var template = handlebars.compile(html);
+        var replacements = {
+            urlCode: `${user._id}/${token}`
         }
+        var htmlToSend = template(replacements);
+        let mailOptions = {
+            from: 'ourstory51@outlook.com',
+            to: user.email,
+            subject: 'Email Verification',
+            html: htmlToSend
+        };
 
-    });
+        transporter.sendMail(mailOptions, (err, data) => {
+            if (err) return !register ? errorResponse(res, 500, err.message) : console.log(err);
+
+            // return only a console log if this function is called by the register route to avoid sending multiple responses
+            if (!register) {
+                res.status(200).json({
+                    message: "Email verification sent"
+                })
+            } else {
+                console.log("Email verifiaction sent");
+            }
+
+        });
+    })
+
 }
 
 module.exports.sendVerfication = async (req, res, next) => {
@@ -67,7 +90,7 @@ module.exports.verify = async (req, res, next) => {
         User.findByIdAndUpdate(userId, { verified: true, verifCode: "" }).then((user) => {
             res.end("Your account has been verified successfully")
         }).catch(err => res.end("Something went wrong, try again later."));
-        
+
     } else {
         res.end("Something went wrong, try again later.")
     };

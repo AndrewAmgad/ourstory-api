@@ -6,7 +6,6 @@ const NodeCache = require("node-cache");
 const nodemailer = require("nodemailer");
 const cors = require('cors');
 var apn = require('apn');
-const fs = require('fs');
 
 // initialize express app
 const app = express();
@@ -31,7 +30,7 @@ mongoose.connect(
 mongoose.Promise = global.Promise;
 
 // email transporter
-module.exports.transporter = nodemailer.createTransport({
+module.exports.transporter = transporter = nodemailer.createTransport({
   service: 'Outlook365',
   secure: false,
   requireTLS: true,
