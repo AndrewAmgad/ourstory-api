@@ -12,7 +12,7 @@ const resetPass = require('../controllers/auth/reset-password');
 router.post('/register', register);
 router.post('/signin', signIn);
 router.get('/profile', checkAuth, profile);
-router.get('/signout', checkAuth, signOut.signOut);
+router.post('/signout', checkAuth, signOut.signOut);
 router.get('/signoutall', checkAuth, signOut.signOutAll);
 router.get('/sendverification', checkAuth, email.sendVerfication);
 router.get('/verify/:user_id/:verification_code', email.verify);

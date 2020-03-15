@@ -7,7 +7,8 @@ const errorResponse = require('../../helper-functions').errorResponse;
 // get all comments for one post
 module.exports.getAll = (req, res, next) => {
     const postId = req.params.post_id;
-    const userId = req.userData.userId
+    const userId = req.userData.userId;
+    console.log(req.headers)
 
     // verify if an integer is provided for pagination
     const page = Number.isNaN(parseInt(req.query.page, 10)) ? 0 : parseInt(req.query.page, 10);
