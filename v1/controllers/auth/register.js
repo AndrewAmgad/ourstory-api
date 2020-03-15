@@ -66,7 +66,7 @@ module.exports = register = (req, res, next) => {
         var hash = bcrypt.hashSync(password, salt);
 
         const city = getCity(cityId);
-        if(city === undefined) return errorResponse(res, 400, "Invalid city ID");
+        if (city === undefined) return errorResponse(res, 400, "Invalid city ID");
 
         // create new user
         const newUser = new User({
@@ -74,7 +74,7 @@ module.exports = register = (req, res, next) => {
             name: name,
             password: hash,
             city: city,
-            notificationSettings: {userActivity: true, userPosts: true}
+            notificationSettings: { userActivity: true, userPosts: true }
         });
 
         // save user to the database
@@ -87,17 +87,18 @@ module.exports = register = (req, res, next) => {
                 sendVerification(req, res, true, result._id);
 
                 // add created jwt to the user's database document
-                User.findByIdAndUpdate(result._id, { $push: { activeTokens: token } }).then(() => {
+                newUser.activeTokens = [token];
+
+                newUser.save().then(() => {
                     // return user along with the token
                     res.status(200).json({
                         id: result._id,
                         name: result.name,
                         email: result.email,
-                        city: {id: result.city.city_id, name: result.city.city_name},
+                        city: { id: result.city.city_id, name: result.city.city_name },
                         token: token
                     });
-
-                });
+                })
 
             }).catch(err => errorResponse(res, 500, err.message));
     })

@@ -28,7 +28,9 @@ module.exports = signIn = (req, res, next) => {
         }
 
         // push the jwt to the user's activeTokens array
-        User.findByIdAndUpdate(user._id, { activeTokens: activeTokens }).then(() => {
+        user.activeTokens = activeTokens;
+
+        user.save().then(() => {
             // return user along with the token
             res.status(200).json({
                 id: user._id,
@@ -37,8 +39,7 @@ module.exports = signIn = (req, res, next) => {
                 city: { id: user.city.city_id, name: user.city.city_name },
                 token: token
             });
-
-        });
+        })
 
     }).catch(err => errorResponse(res, 500, err))
 };
