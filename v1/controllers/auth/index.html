@@ -37,6 +37,7 @@
 
         img {
             height: 30px;
+            width: auto;
             display: block;
             margin-right: auto;
             margin-left: auto;
@@ -79,6 +80,13 @@
             margin-right: auto;
             cursor: pointer;
         }
+
+        .foot-text{
+            color: #8B8B8B;
+            font-size: 12px;
+            text-align: center;
+            margin-top: 12px;
+        }
     </style>
 </head>
 
@@ -90,6 +98,7 @@
             <div class="text">Please confirm that you want to use this email as your Our Story account email address. We do this for your own security only.</div>
             <div class="button-container"><a href='https://api-ourstory.herokuapp.com/api/v1/auth/verify/{{urlCode}}'><button class="button">Verify my email</button></a></div>
         </div>
+        <div class='foot-text'>&#169; 2020 Our Story. All rights reserved.</div>
     </div>
 </body>
 
