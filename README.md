@@ -23,6 +23,13 @@ REST API for the Our Story mobile application. This project is still WIP and not
 - Ability to filter the posts response to get the most popular ones or the ones near you.
 - Posts & comments pagination
 
+## Notifications
+- Notifications are sent to the user through Apple's Push Notification service.
+- An endpoint fetches the user's device ID once they confirm the notifications permission
+- User receives a notification each time someone comments on their posts or if someone commented on a post they commented on.
+- Ability to turn off any notifications if desired.
+
 ## Author
-Andrew Amgad Mouris,
-andrewamgad30@gmail.com
+Andrew Amgad, <br />
+<strong>Email</strong>: andrewamgad30@gmail.com <br />
+<strong>LinkedIn</strong>: https://www.linkedin.com/in/andrew-amgad-87068616a/
