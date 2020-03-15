@@ -6,11 +6,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://fonts.googleapis.com/css?family=Montserrat:400,500,600,700&display=swap" rel="stylesheet">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Document</title>
+    <title>Email</title>
     <style>
         body {
             font-family: 'Montserrat';
             font-size: 22px;
+        }
+
+        a{
+            text-decoration: none
         }
 
         #container {
@@ -81,7 +85,7 @@
 <body>
     <div id="container">
         <div class="card">
-            <img src="logo.png" />
+            <img src="https://i.imgur.com/oqyWxks.png" />
             <div class="title">Please verify your email address</div>
             <div class="text">Please confirm that you want to use this email as your Our Story account email address. We do this for your own security only.</div>
             <div class="button-container"><a href='https://api-ourstory.herokuapp.com/api/v1/auth/verify/{{urlCode}}'><button class="button">Verify my email</button></a></div>
