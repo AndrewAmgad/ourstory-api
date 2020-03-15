@@ -35,7 +35,11 @@ module.exports.getAll = (req, res, next) => {
 
        
             comments.map((comment) => {
-                if(comment.author_id.toString() === userId.toString()) comment.can_edit = true;
+                if(comment.author_id.toString() === userId.toString()){
+                    comment.can_edit = true;
+                }  else {
+                    comment.can_edit = false;
+                }
                 // remove author_id from the response if the comment is marked as anonymous
                 if(comment.anonymous === true) delete comment.author_id;
 
