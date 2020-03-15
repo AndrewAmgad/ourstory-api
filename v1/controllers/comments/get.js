@@ -7,6 +7,7 @@ const errorResponse = require('../../helper-functions').errorResponse;
 // get all comments for one post
 module.exports.getAll = (req, res, next) => {
     const postId = req.params.post_id;
+    const userId = req.userData.userId
 
     // verify if an integer is provided for pagination
     const page = Number.isNaN(parseInt(req.query.page, 10)) ? 0 : parseInt(req.query.page, 10);
@@ -34,7 +35,7 @@ module.exports.getAll = (req, res, next) => {
 
        
             comments.map((comment) => {
-                
+                if(comment.author_id.toString() === userId.toString()) comment.can_edit = true;
                 // remove author_id from the response if the comment is marked as anonymous
                 if(comment.anonymous === true) delete comment.author_id;
 

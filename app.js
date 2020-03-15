@@ -27,6 +27,7 @@ mongoose.connect(
   console.log("MongoDB Connected")
 }).catch(error => console.log(error));
 
+
 mongoose.Promise = global.Promise;
 
 // email transporter
