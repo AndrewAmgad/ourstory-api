@@ -34,7 +34,7 @@ module.exports.sendResetMail = async (req, res, next) => {
           <b> Password Change</b><br />
           Visit the URL below to reset your password. Please note that this URL is only valid for 2 hours.
           <br />
-          <a href="${process.env.baseUrl}/v1/auth/verifypass/${user._id}/${token}">${process.env.baseUrl}/v1/auth/verifypass/${user._id}/${token}</a>
+          <a href="${process.env.baseUrl}/api/v1/auth/verifypass/${user._id}/${token}">${process.env.baseUrl}/api/v1/auth/verifypass/${user._id}/${token}</a>
           `
 
     let mailOptions = {

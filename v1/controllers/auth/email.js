@@ -22,7 +22,7 @@ module.exports.sendVerfMail = sendVerfMail = async (req, res, register, user_id)
         <b> Email Verification </b><br />
         By clicking the link below, you verify registering to Our Story using this email address. You can ignore this email if you did not attempt this registration.
         <br />
-        <a href="${process.env.baseUrl}/v1/auth/verify/${user._id}/${token}">${process.env.baseUrl}/v1/auth/verify/${user._id}/${token}</a>
+        <a href="${process.env.baseUrl}/api/v1/auth/verify/${user._id}/${token}">${process.env.baseUrl}/api/v1/auth/verify/${user._id}/${token}</a>
         `
 
     let mailOptions = {

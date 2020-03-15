@@ -11,9 +11,6 @@ const fs = require('fs');
 // initialize express app
 const app = express();
 
-const d = new Date().toLocaleTimeString()
-console.log(d)
-
 // allow cors
 app.use(
   cors({
