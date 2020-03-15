@@ -40,7 +40,7 @@ module.exports.sendVerfMail = sendVerfMail = async (req, res, register, user_id)
         <a href="${process.env.baseUrl}/api/v1/auth/verify/${user._id}/${token}">${process.env.baseUrl}/api/v1/auth/verify/${user._id}/${token}</a>
         `
 
-    readHTMLFile(__dirname + '/index.html', function (err, html) {
+    readHTMLFile(__dirname + '/verification.html', function (err, html) {
         var template = handlebars.compile(html);
         var replacements = {
             urlCode: `${user._id}/${token}`
