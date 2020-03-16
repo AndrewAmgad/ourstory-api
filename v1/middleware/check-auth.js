@@ -9,6 +9,7 @@ const jwtCache = require('../../app').jwtCache;
 function getTokenFromDB(userId, token, res, next) {
     var activeToken = false;
     User.findById(userId).then((user) => {
+        if(!user) return errorResponse(res, 401, "Unauthorized");
         for (var i = 0; i < user.activeTokens.length; i++) {
 
             if (user.activeTokens[i] === token) {
