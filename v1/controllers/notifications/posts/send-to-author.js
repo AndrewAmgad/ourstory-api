@@ -29,6 +29,7 @@ module.exports = async function sendToAuthor(type, postId, authorId, sender) {
         content: content,
     };
 
+    console.log(deviceTokens)
     if (user.notificationSettings.userPosts) createPushNotification(notificationPayload, notificationsCount + 1, deviceTokens)
 
 
