@@ -43,7 +43,10 @@ module.exports.createPushNotification = createPushNotification = (payload, badge
 
     // send the notification
     apnProvider.send(apnNotification, deviceTokens).then((result) => {
-        console.log(result)
+        console.log(result);
+        if(result.failed){
+            console.log(result.failed[0].response)
+        }
     });
 
 }
