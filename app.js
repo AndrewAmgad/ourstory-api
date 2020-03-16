@@ -47,7 +47,7 @@ var apnOptions = {
     keyId: process.env.keyId,
     teamId: process.env.teamId
   },
-  production: process.env.production
+  production: process.env.apnProduction
 };
 
 module.exports.apnProvider = new apn.Provider(apnOptions);
