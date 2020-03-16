@@ -32,14 +32,6 @@ module.exports.sendVerfMail = sendVerfMail = async (req, res, register, user_id)
     // add the verification string to the user's object on the database
     User.findByIdAndUpdate(userId, { verfCode: token }).catch(err => !register ? errorResponse(res, 500, err.message) : console.log(err));
 
-    // email body, this is temporary 
-    const htmlMail = `
-        <b> Email Verification </b><br />
-        By clicking the link below, you verify registering to Our Story using this email address. You can ignore this email if you did not attempt this registration.
-        <br />
-        <a href="${process.env.baseUrl}/api/v1/auth/verify/${user._id}/${token}">${process.env.baseUrl}/api/v1/auth/verify/${user._id}/${token}</a>
-        `
-
     readHTMLFile(__dirname + '/verification.html', function (err, html) {
         var template = handlebars.compile(html);
         var replacements = {
