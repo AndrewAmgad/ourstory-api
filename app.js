@@ -31,7 +31,8 @@ mongoose.Promise = global.Promise;
 
 // email transporter
 module.exports.transporter = transporter = nodemailer.createTransport({
-  service: 'Outlook365',
+  host: 'smtp.mailgun.org',
+  port: 587,
   secure: false,
   requireTLS: true,
   auth: {

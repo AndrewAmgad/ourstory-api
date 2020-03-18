@@ -39,9 +39,9 @@ module.exports.sendVerfMail = sendVerfMail = async (req, res, register, user_id)
         }
         var htmlToSend = template(replacements);
         let mailOptions = {
-            from: 'ourstory51@outlook.com',
+            from: 'no-reply@ourstory-app.com',
             to: user.email,
-            subject: 'Email Verification',
+            subject: '[Our Story] Please verify your email address',
             html: htmlToSend
         };
 

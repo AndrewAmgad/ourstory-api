@@ -38,7 +38,7 @@ module.exports.sendResetMail = async (req, res, next) => {
           `
 
     let mailOptions = {
-        subject: 'ourstory51@outlook.com',
+        subject: 'no-reply@ourstory-app.com',
         to: user.email,
         subject: 'Password Change',
         html: html
