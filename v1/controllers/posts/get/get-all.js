@@ -35,7 +35,11 @@ module.exports = (req, res, next) => {
         const hasMore = (pageLimit * page) < total && (page !== 0) ? true : false;
 
         if (posts.length > 0) {
-            posts.map(post => {
+
+            // remove the posts the user had reported previously
+            var postsFilter = posts.filter(post => (!post.hidden_from.includes(userData.userId)));
+
+            postsFilter.map(post => {
                 // add can_edit property to the response if the requesting user is the author
                 if(post.author_id.toString() === userData.userId.toString()) post.can_edit = true;
 
@@ -46,12 +50,9 @@ module.exports = (req, res, next) => {
                 if (userCity === post.city.name) post.tag = { id: 1, name: "Near you" }
                 if (post.views > trendingLimit && post.last_view > new Date() - 7 * 60 * 60 * 24 * 1000) post.tag = { id: 0, name: "Trending" }
 
-                
-
                 // rename _id to id
                 post.id = post._id;
-                delete post._id;
-                delete post.anonymous;
+                ['_id', 'anonymous', 'hidden_from'].forEach(e => delete post[e]);
 
             });
         }
@@ -61,7 +62,7 @@ module.exports = (req, res, next) => {
             has_more: hasMore,
             total: total,
             page: page,
-            posts: posts
+            posts: postsFilter
         });
 
     }).catch(err => errorResponse(res, 500, err.message));

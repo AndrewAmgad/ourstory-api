@@ -10,7 +10,7 @@ module.exports = (req, res, next) => {
     const userId = req.userData.userId;
     const time = new Date().getTime();
 
-    Post.findByIdAndUpdate(postId, { $inc: { 'views': 1 }, last_view: time }).select('-__v').lean().then((post => {
+    Post.findByIdAndUpdate(postId, { $inc: { 'views': 1 }, last_view: time }).select('-__v -hidden_from').lean().then((post => {
         if (!post) errorResponse(res, 404, "Post ID not found");
 
         // add a boolean property to the response if the user's ID matches the author's.

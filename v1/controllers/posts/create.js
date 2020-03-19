@@ -21,7 +21,8 @@ module.exports.createPost = (req, res, next) => {
             time: time,
             anonymous: anonymous === true ? true : false,
             views: 0,
-            last_view: time
+            last_view: time,
+            hidden_from: []
         })
 
 
@@ -33,9 +34,8 @@ module.exports.createPost = (req, res, next) => {
 
                 // rename _id to id
                 newPost.id = newPost._id;
-                delete newPost._id
-                delete newPost.__v
-                delete newPost.anonymous
+
+                ['_id', 'anonymous', 'hidden_from', '__v'].forEach(e => delete newPost[e]);
                 
                 res.status(200).json(newPost)
             })

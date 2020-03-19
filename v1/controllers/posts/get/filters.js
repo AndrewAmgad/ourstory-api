@@ -25,7 +25,11 @@ module.exports.filterByLocation = (req, res, page, pageLimit) => {
 
 
             if (posts.length > 0) {
-                posts.map(post => {
+
+                // remove the posts the user had reported previously
+                var postsFilter = posts.filter(post => (!post.hidden_from.includes(userData.userId)));
+
+                postsFilter.map(post => {
                     // add can_edit property to the response if the requesting user is the author
                     if (post.author_id.toString() === userData.userId.toString()) post.can_edit = true;
 
@@ -38,7 +42,7 @@ module.exports.filterByLocation = (req, res, page, pageLimit) => {
 
                     // rename _id to id and remove the anonymous property
                     post.id = post._id;
-                    ['_id', 'anonymous'].forEach(e => delete post[e]);
+                    ['_id', 'anonymous', 'hidden_from'].forEach(e => delete post[e]);
                 });
             };
 
@@ -47,7 +51,7 @@ module.exports.filterByLocation = (req, res, page, pageLimit) => {
                 has_more: hasMore,
                 total: total,
                 page: page,
-                posts: posts
+                posts: postsFilter
             });
         }).catch(err => errorResponse(res, 500, err.message));
 };
@@ -55,7 +59,7 @@ module.exports.filterByLocation = (req, res, page, pageLimit) => {
 // get the 10 most views posts of the last 7 days.
 module.exports.filterByTrending = (req, res, page, pageLimit) => {
     const userData = req.userData;
-    
+
     Post.find({ last_view: { $gte: new Date() - 7 * 60 * 60 * 24 * 1000 }, views: { $gte: trendingLimit } })
         .skip(page && pageLimit ? (page - 1) * pageLimit : 0).limit(page !== 0 ? pageLimit : null)
         .select("-__v -users_activity").sort({ views: -1 }).lean().sort({ _id: -1 })
@@ -68,7 +72,11 @@ module.exports.filterByTrending = (req, res, page, pageLimit) => {
             const hasMore = (pageLimit * page) < total && (page !== 0) ? true : false;
 
             if (posts.length > 0) {
-                posts.map(post => {
+
+                // remove the posts the user had reported previously
+                var postsFilter = posts.filter(post => (!post.hidden_from.includes(userData.userId)));
+
+                postsFilter.map(post => {
                     // add can_edit property to the response if the requesting user is the author
                     if (post.author_id.toString() === userData.userId.toString()) post.can_edit = true;
 
@@ -78,7 +86,7 @@ module.exports.filterByTrending = (req, res, page, pageLimit) => {
 
                     // rename _id to id and remove the anonymous property
                     post.id = post._id;
-                    ['_id', 'anonymous'].forEach(e => delete post[e]);
+                    ['_id', 'anonymous', 'hidden_from'].forEach(e => delete post[e]);
                 });
             }
 
@@ -87,7 +95,7 @@ module.exports.filterByTrending = (req, res, page, pageLimit) => {
                 has_more: hasMore,
                 total: total,
                 page: page,
-                posts: posts
+                posts: postsFilter
             });
 
         }).catch(err => errorResponse(res, 500, err.message));
