@@ -8,7 +8,6 @@ const errorResponse = require('../../helper-functions').errorResponse;
 module.exports.getAll = (req, res, next) => {
     const postId = req.params.post_id;
     const userId = req.userData.userId;
-    console.log(req.headers)
 
     // verify if an integer is provided for pagination
     const page = Number.isNaN(parseInt(req.query.page, 10)) ? 0 : parseInt(req.query.page, 10);
@@ -27,15 +26,15 @@ module.exports.getAll = (req, res, next) => {
         .skip(page && pageLimit ? (page - 1) * pageLimit : 0)
         .limit(page !== 0 ? pageLimit : null)
         .select("-__v -post_id").lean().sort({ _id: -1 }).then( async (comments) => {
-
             // total amount of comments
             const total = await Comment.countDocuments({post_id: postId});
 
             // check if there are more comments in the next page
             const hasMore = (pageLimit * page) < total && (page !== 0) ? true : false;
 
+            var commentsFilter = comments.filter(comment => !comment.hidden_from.includes(userId));
        
-            comments.map((comment) => {
+            commentsFilter.map((comment) => {
                 if(comment.author_id.toString() === userId.toString()){
                     comment.can_edit = true;
                 }  else {
@@ -46,8 +45,8 @@ module.exports.getAll = (req, res, next) => {
 
                  // replace _id with id
                 comment.id = comment._id;
-                delete comment._id
-                delete comment.anonymous;
+
+                ['_id', 'anonymous', 'hidden_from'].forEach(e => delete comment[e]);
             });
 
             // response
@@ -55,7 +54,7 @@ module.exports.getAll = (req, res, next) => {
                 has_more: hasMore,
                 total: total,
                 page: page,
-                comments: comments
+                comments: commentsFilter
             })
         });
 };

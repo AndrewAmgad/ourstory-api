@@ -8,7 +8,8 @@ const commentSchema = new Schema({
     city: Object,
     content: String,
     time: Number,
-    anonymous: Boolean
+    anonymous: Boolean,
+    hidden_from: Array
 });
     
 const Comment = mongoose.model('Comment', commentSchema);

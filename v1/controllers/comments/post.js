@@ -49,7 +49,7 @@ module.exports = async (req, res, next) => {
             newComment.id = newComment._id;
 
             // delete unnecessary properties.
-            ['_id', '__v', 'anonymous'].forEach(e => delete newComment[e]);
+            ['_id', '__v', 'anonymous', 'hidden_from'].forEach(e => delete newComment[e]);
 
             // sender object which will be further sent to the notifiction functions.
             const sender = {
