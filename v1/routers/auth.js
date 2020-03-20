@@ -8,16 +8,19 @@ const checkAuth = require('../middleware/check-auth');
 const signOut = require('../controllers/auth/signout');
 const email = require('../controllers/auth/email');
 const resetPass = require('../controllers/auth/reset-password');
+const blockUser = require('../controllers/auth/block');
 
-router.post('/register', register);
-router.post('/signin', signIn);
 router.get('/profile', checkAuth, profile);
-router.post('/signout', checkAuth, signOut.signOut);
 router.get('/signoutall', checkAuth, signOut.signOutAll);
 router.get('/sendverification', checkAuth, email.sendVerfication);
 router.get('/verify/:user_id/:verification_code', email.verify);
 router.get('/sendresetmail', resetPass.sendResetMail);
 router.get('/verifypass/:user_id/:token', resetPass.verifyPass);
-router.post('/resetpass', resetPass.changePassword)
+
+router.post('/signout', checkAuth, signOut.signOut);
+router.post('/resetpass', resetPass.changePassword);
+router.post('/register', register);
+router.post('/signin', signIn);
+router.post('/block/:user_id', checkAuth, blockUser)
 
 module.exports = router;

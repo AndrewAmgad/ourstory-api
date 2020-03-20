@@ -1,8 +1,20 @@
 const Post = require('../../models/post');
 const Comment = require('../../models/comment');
+const User = require('../../models/user');
 const mongoose = require('mongoose');
 
 const errorResponse = require('../../helper-functions').errorResponse;
+
+// hide the posts the user had reported / hidden previously as well as posts from blocked users
+async function filterComments(userId, comments) {
+    const user = await User.findById(userId).catch(err => errorResponse(res, 500, err.message));
+    const blockedUsers = user.blockedUsers;
+
+    // remove the posts the user had reported / hidden previously as well as posts from blocked users
+    var filter = comments.filter(comment => (!comment.hidden_from.includes(userId) && !blockedUsers.includes(comment.author_id)));
+
+    return filter;
+};
 
 // get all comments for one post
 module.exports.getAll = (req, res, next) => {
@@ -25,25 +37,28 @@ module.exports.getAll = (req, res, next) => {
     Comment.find({ post_id: postId })
         .skip(page && pageLimit ? (page - 1) * pageLimit : 0)
         .limit(page !== 0 ? pageLimit : null)
-        .select("-__v -post_id").lean().sort({ _id: -1 }).then( async (comments) => {
+        .select("-__v -post_id").lean().sort({ _id: -1 }).then(async (comments) => {
             // total amount of comments
-            const total = await Comment.countDocuments({post_id: postId});
+            const total = await Comment.countDocuments({ post_id: postId });
 
             // check if there are more comments in the next page
             const hasMore = (pageLimit * page) < total && (page !== 0) ? true : false;
 
-            var commentsFilter = comments.filter(comment => !comment.hidden_from.includes(userId));
-       
-            commentsFilter.map((comment) => {
-                if(comment.author_id.toString() === userId.toString()){
-                    comment.can_edit = true;
-                }  else {
-                    comment.can_edit = false;
-                }
-                // remove author_id from the response if the comment is marked as anonymous
-                if(comment.anonymous === true) delete comment.author_id;
+            var commentsFilter = await filterComments(userId, comments)
 
-                 // replace _id with id
+            commentsFilter.map((comment) => {
+
+                // add the can_edit property if the requesting user is the author
+                if (comment.author_id.toString() === userId.toString()) {
+                    comment.can_edit = true;
+                } else {
+                    comment.can_edit = false;
+                };
+
+                // remove author_id from the response if the comment is marked as anonymous
+                if (comment.anonymous === true) delete comment.author_id;
+
+                // replace _id with id
                 comment.id = comment._id;
 
                 ['_id', 'anonymous', 'hidden_from'].forEach(e => delete comment[e]);
@@ -52,7 +67,7 @@ module.exports.getAll = (req, res, next) => {
             // response
             res.status(200).json({
                 has_more: hasMore,
-                total: total,
+                total: commentsFilter.length,
                 page: page,
                 comments: commentsFilter
             })

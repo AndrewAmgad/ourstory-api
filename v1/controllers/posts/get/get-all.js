@@ -3,6 +3,7 @@ const Post = require('../../../models/post');
 const errorResponse = require('../../../helper-functions').errorResponse;
 const filterByLocation = require('./filters').filterByLocation;
 const filterByTrending = require('./filters').filterByTrending;
+const hidePosts = require('./hide-posts');
 
 // minimum amount of views for a post to be on trending
 const trendingLimit = 20;
@@ -36,8 +37,7 @@ module.exports = (req, res, next) => {
 
         if (posts.length > 0) {
 
-            // remove the posts the user had reported previously
-            var postsFilter = posts.filter(post => (!post.hidden_from.includes(userData.userId)));
+            var postsFilter = await hidePosts(userData.userId, posts);
 
             postsFilter.map(post => {
                 // add can_edit property to the response if the requesting user is the author
@@ -60,7 +60,7 @@ module.exports = (req, res, next) => {
         // response
         res.status(200).json({
             has_more: hasMore,
-            total: total,
+            total: postsFilter.length,
             page: page,
             posts: postsFilter
         });

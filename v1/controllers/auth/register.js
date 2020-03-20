@@ -74,7 +74,8 @@ module.exports = register = (req, res, next) => {
             name: name,
             password: hash,
             city: city,
-            notificationSettings: { userActivity: true, userPosts: true }
+            notificationSettings: { userActivity: true, userPosts: true },
+            blockedUsers: []
         });
 
         // save user to the database

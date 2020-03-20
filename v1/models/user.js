@@ -12,7 +12,8 @@ const userSchema = new Schema({
     verfCode: String,
     passChange: Object,
     deviceTokens: [],
-    notificationSettings: Object
+    notificationSettings: Object,
+    blockedUsers: [{ type: Schema.Types.ObjectId, ref: 'User' }]
 });
 
 const User = mongoose.model('User', userSchema);
