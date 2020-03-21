@@ -29,15 +29,18 @@ module.exports = (req, res, next) => {
 
     // get all posts
     Post.find(query).skip(page && pageLimit ? (page - 1) * pageLimit : 0).limit(page !== 0 ? pageLimit : null).select("-__v -users_activity").lean().sort({ _id: -1 }).then(async (posts) => {
+        
         // return total amount of posts in the collection
         const total = await Post.countDocuments(query);
 
         // check if there are more posts in the next page
         const hasMore = (pageLimit * page) < total && (page !== 0) ? true : false;
 
+        var postsFilter = [];
+
         if (posts.length > 0) {
 
-            var postsFilter = await hidePosts(userData.userId, posts);
+            postsFilter = await hidePosts(userData.userId, posts);
 
             postsFilter.map(post => {
                 // add can_edit property to the response if the requesting user is the author
