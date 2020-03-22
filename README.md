@@ -5,7 +5,7 @@
   <br/>
   
 
-# Our Story API (UNDER DEVELOPMENT)
+# Our Story API
 https://ourstory-app.com
 
 REST API for the Our Story mobile application. This project is still WIP and not published yet.
@@ -24,6 +24,7 @@ REST API for the Our Story mobile application. This project is still WIP and not
 - Endpoints for creating, deleting and retrieving posts and comments.
 - Ability to filter the posts response to get the most popular ones or the ones near you.
 - Posts & comments pagination
+- The user has the option to hide posts and comments they do not want to see, as well as block posts and comments from a specific user.
 
 ## Notifications
 - Notifications are sent to the user through Apple's Push Notification service.
