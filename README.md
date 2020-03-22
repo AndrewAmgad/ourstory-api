@@ -8,7 +8,7 @@
 # Our Story API
 https://ourstory-app.com
 
-REST API for the Our Story mobile application. This project is still WIP and not published yet.
+REST API for the Our Story mobile application. Now live on the App Store.
 
 ## Introduction
 - Our Story is an iOS application that gives the users the chance to share their thoughts, secrets and emotional troubles, allowing them to receive support from the rest of the community. All of this can be achieved anonymously if the user desires.
