@@ -34,5 +34,6 @@ REST API for the Our Story mobile application. Now live on the App Store.
 
 ## Author
 Andrew Amgad, <br />
-<strong>Email</strong>: andrewamgad30@gmail.com <br />
-<strong>LinkedIn</strong>: https://www.linkedin.com/in/andrew-amgad-87068616a/
+Portfolio: https://andrewamgad.com
+<strong>Email</strong>: contact@andrewamgad.com <br />
+<strong>LinkedIn</strong>: https://www.linkedin.com/in/andrewamgad
