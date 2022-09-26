@@ -24,7 +24,7 @@
     "mongoose": "^5.9.5",
     "node-cache": "^5.1.0",
     "nodemailer": "^6.4.5",
-    "nodemailer-mailgun-transport": "^2.0.0",
+    "nodemailer-mailgun-transport": "^2.1.5",
     "nodemon": "^2.0.2",
     "supertest": "^4.0.2"
   }
